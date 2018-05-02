@@ -77,8 +77,7 @@ public class MapViewHandler extends Activity {
     private Context mContext;
     private Uri mUri;
 
-    public MapViewHandler(FeatureLayerDTG featureLayerDTG, Callout mCallout, MapView mMapView,
-                          Popup popupInfos, Context mContext) {
+    public MapViewHandler(FeatureLayerDTG featureLayerDTG, Callout mCallout, MapView mMapView, Popup popupInfos, Context mContext) {
         this.mFeatureLayerDTG = featureLayerDTG;
         this.mCallout = mCallout;
         this.mMapView = mMapView;
@@ -225,7 +224,7 @@ public class MapViewHandler extends Activity {
                         Feature item = (Feature) iterator.next();
                         Map<String, Object> attributes = item.getAttributes();
                         String format_date = "";
-                        String[] split = attributes.get(Constant.IDSU_CO).toString().split("_");
+                        String[] split = attributes.get(Constant.IDDIEM_DANH_GIA).toString().split("_");
                         try {
                             format_date = Constant.DATE_FORMAT.format((new GregorianCalendar(Integer.parseInt(split[3]), Integer.parseInt(split[2]), Integer.parseInt(split[1])).getTime()));
                         } catch (Exception e) {
@@ -237,10 +236,8 @@ public class MapViewHandler extends Activity {
                         } catch (Exception e) {
 
                         }
-                        adapter.add(new TraCuuAdapter.Item(Integer.parseInt(attributes.get(Constant.OBJECTID).toString()), attributes.get(Constant.IDSU_CO).toString(), Integer.parseInt(attributes.get(Constant.TRANG_THAI).toString()), format_date, viTri));
+                        adapter.add(new TraCuuAdapter.Item(Integer.parseInt(attributes.get(Constant.OBJECTID).toString()), attributes.get(Constant.IDDIEM_DANH_GIA).toString(), format_date, viTri));
                         adapter.notifyDataSetChanged();
-
-//                        queryByObjectID(Integer.parseInt(attributes.get(Constant.OBJECTID).toString()));
                     }
                 } catch (InterruptedException e) {
                     e.printStackTrace();
@@ -289,24 +286,22 @@ public class MapViewHandler extends Activity {
                                 // highlight the selected feature
                                 FeatureLayer featureLayer = mFeatureLayerDTG.getFeatureLayer();
                                 featureLayer.clearSelection();
-                                if (mFeatureLayerDTG.getTitleLayer().equals("Điểm sự cố")) {
-                                    featureLayer.selectFeature(mSelectedArcGISFeature);
-                                    popupInfos.setFeatureLayerDTG(mFeatureLayerDTG);
-                                    LinearLayout linearLayout = popupInfos.createPopup(mSelectedArcGISFeature);
-                                    Envelope envelope = mSelectedArcGISFeature.getGeometry().getExtent();
-                                    Envelope envelope1 = new Envelope(new Point(envelope.getXMin(), envelope.getYMin() + DELTA_MOVE_Y), new Point(envelope.getXMax(), envelope.getYMax() + DELTA_MOVE_Y));
-                                    mMapView.setViewpointGeometryAsync(envelope1, 0);
-                                    // show CallOut
-                                    mCallout.setLocation(clickPoint);
-                                    mCallout.setContent(linearLayout);
-                                    popupInfos.runOnUiThread(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            mCallout.refresh();
-                                            mCallout.show();
-                                        }
-                                    });
-                                }
+                                featureLayer.selectFeature(mSelectedArcGISFeature);
+                                popupInfos.setFeatureLayerDTG(mFeatureLayerDTG);
+                                LinearLayout linearLayout = popupInfos.createPopup(mSelectedArcGISFeature);
+                                Envelope envelope = mSelectedArcGISFeature.getGeometry().getExtent();
+                                Envelope envelope1 = new Envelope(new Point(envelope.getXMin(), envelope.getYMin() + DELTA_MOVE_Y), new Point(envelope.getXMax(), envelope.getYMax() + DELTA_MOVE_Y));
+                                mMapView.setViewpointGeometryAsync(envelope1, 0);
+                                // show CallOut
+                                mCallout.setLocation(clickPoint);
+                                mCallout.setContent(linearLayout);
+                                popupInfos.runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        mCallout.refresh();
+                                        mCallout.show();
+                                    }
+                                });
                             }
                         } else {
                             // none of the features on the map were selected
@@ -360,8 +355,7 @@ public class MapViewHandler extends Activity {
             final Point clickPoint = params[0];
             final Feature feature = mServiceFeatureTable.createFeature();
             feature.setGeometry(clickPoint);
-            final ListenableFuture<List<GeocodeResult>> listListenableFuture =
-                    loc.reverseGeocodeAsync(clickPoint);
+            final ListenableFuture<List<GeocodeResult>> listListenableFuture = loc.reverseGeocodeAsync(clickPoint);
             listListenableFuture.addDoneListener(new Runnable() {
                 @Override
                 public void run() {
@@ -376,21 +370,17 @@ public class MapViewHandler extends Activity {
                             String address = geocodeResult.getAttributes().get("LongLabel").toString();
                             feature.getAttributes().put(Constant.VI_TRI, address);
                         }
-                        Short intObj = new Short((short) 0);
-                        feature.getAttributes().put(Constant.TRANG_THAI, intObj);
-
                         String searchStr = "";
                         String dateTime = "";
                         String timeID = "";
                         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
                             dateTime = getDateString();
                             timeID = getTimeID();
-                            searchStr = Constant.IDSU_CO + " like '%" + timeID + "'";
+                            searchStr = Constant.IDDIEM_DANH_GIA + " like '%" + timeID + "'";
                         }
                         QueryParameters queryParameters = new QueryParameters();
                         queryParameters.setWhereClause(searchStr);
-                        final ListenableFuture<FeatureQueryResult> featureQuery =
-                                mServiceFeatureTable.queryFeaturesAsync(queryParameters);
+                        final ListenableFuture<FeatureQueryResult> featureQuery = mServiceFeatureTable.queryFeaturesAsync(queryParameters);
                         final String finalDateTime = dateTime;
                         final String finalTimeID = timeID;
                         featureQuery.addDoneListener(new Runnable() {
@@ -412,8 +402,7 @@ public class MapViewHandler extends Activity {
             return null;
         }
 
-        private void addFeatureAsync(ListenableFuture<FeatureQueryResult> featureQuery,
-                                     Feature feature, String finalTimeID, String finalDateTime) {
+        private void addFeatureAsync(ListenableFuture<FeatureQueryResult> featureQuery, Feature feature, String finalTimeID, String finalDateTime) {
             try {
                 // lấy id lớn nhất
                 int id_tmp;
@@ -422,16 +411,15 @@ public class MapViewHandler extends Activity {
                 Iterator iterator = result.iterator();
                 while (iterator.hasNext()) {
                     Feature item = (Feature) iterator.next();
-                    id_tmp = Integer.parseInt(item.getAttributes().get(Constant.IDSU_CO).toString().split("_")[0]);
+                    id_tmp = Integer.parseInt(item.getAttributes().get(Constant.IDDIEM_DANH_GIA).toString().split("_")[0]);
                     if (id_tmp > id) id = id_tmp;
                 }
                 id++;
-                feature.getAttributes().put(Constant.IDSU_CO, id + "_" + finalTimeID);
+                feature.getAttributes().put(Constant.IDDIEM_DANH_GIA, id + "_" + finalTimeID);
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                     Date date = Constant.DATE_FORMAT.parse(finalDateTime);
                     Calendar c = Calendar.getInstance();
                     feature.getAttributes().put(Constant.NGAY_CAP_NHAT, c);
-                    feature.getAttributes().put(Constant.NGAY_THONG_BAO, c);
                 }
                 ListenableFuture<Void> mapViewResult = mServiceFeatureTable.addFeatureAsync(feature);
                 mapViewResult.addDoneListener(new Runnable() {

@@ -80,7 +80,7 @@ import qlsctanhoa.hcm.ditagis.com.qlsc.utities.MapViewHandler;
 import qlsctanhoa.hcm.ditagis.com.qlsc.utities.MySnackBar;
 import qlsctanhoa.hcm.ditagis.com.qlsc.utities.Popup;
 
-public class QuanLySuCo extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, View.OnClickListener {
+public class QuanLyChatLuongNuoc extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, View.OnClickListener {
 
     private Uri mUri;
     private Popup popupInfos;
@@ -105,7 +105,7 @@ public class QuanLySuCo extends AppCompatActivity implements NavigationView.OnNa
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_quan_ly_su_co);
+        setContentView(R.layout.activity_quan_ly_chat_luong_nuoc);
         setLicense();
         //for camera
         StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();
@@ -116,7 +116,7 @@ public class QuanLySuCo extends AppCompatActivity implements NavigationView.OnNa
         //đưa listview search ra phía sau
         this.mListViewSearch.invalidate();
         List<TraCuuAdapter.Item> items = new ArrayList<>();
-        this.mSearchAdapter = new TraCuuAdapter(QuanLySuCo.this, items);
+        this.mSearchAdapter = new TraCuuAdapter(QuanLyChatLuongNuoc.this, items);
         this.mListViewSearch.setAdapter(mSearchAdapter);
         this.mListViewSearch.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -153,13 +153,14 @@ public class QuanLySuCo extends AppCompatActivity implements NavigationView.OnNa
             featureLayerDTG.setQueryFields(config.getQueryField());
             featureLayerDTG.setTitleLayer(config.getAlias());
             featureLayerDTG.setUpdateFields(config.getUpdateField());
-            if (config.getName() != null && config.getName().equals(Constant.NAME_DIEMSUCO)) {
+            if (config.getName() != null && config.getName().equals(Constant.NAME_DIEMDANHGIANUOC)) {
                 featureLayer.setId(config.getName());
-                popupInfos = new Popup(QuanLySuCo.this, serviceFeatureTable, mCallout);
-                featureLayer.setPopupEnabled(true);
-                setRendererSuCoFeatureLayer(featureLayer);
                 mCallout = mMapView.getCallout();
-                mMapViewHandler = new MapViewHandler(featureLayerDTG,mCallout, mMapView,popupInfos,QuanLySuCo.this);
+                popupInfos = new Popup(QuanLyChatLuongNuoc.this, serviceFeatureTable, mCallout);
+                featureLayer.setPopupEnabled(true);
+//                setRendererSuCoFeatureLayer(featureLayer);
+
+                mMapViewHandler = new MapViewHandler(featureLayerDTG,mCallout, mMapView,popupInfos,QuanLyChatLuongNuoc.this);
             }
             mFeatureLayerDTGS.add(featureLayerDTG);
             mMap.getOperationalLayers().add(featureLayer);
@@ -177,7 +178,7 @@ public class QuanLySuCo extends AppCompatActivity implements NavigationView.OnNa
                     CheckBox checkBox = new CheckBox(linnearDisplayLayer.getContext());
 
                     if (layer.getName().trim().equals("")) {
-                        checkBox.setText(Config.Alias.alias_diemsuco);
+                        checkBox.setText(Config.Alias.alias_diemdanhgianuoc);
                     } else {
                         checkBox.setText(layer.getName());
                     }
@@ -204,7 +205,7 @@ public class QuanLySuCo extends AppCompatActivity implements NavigationView.OnNa
                 for (int i = 0; i < linnearDisplayLayer.getChildCount(); i++) {
                     View v = linnearDisplayLayer.getChildAt(i);
                     if (v instanceof CheckBox) {
-                        if (((CheckBox) v).getText().equals(Config.Alias.alias_diemsuco))
+                        if (((CheckBox) v).getText().equals(Config.Alias.alias_diemdanhgianuoc))
                             ((CheckBox) v).setChecked(true);
                         else ((CheckBox) v).setChecked(false);
                     }
@@ -307,20 +308,20 @@ public class QuanLySuCo extends AppCompatActivity implements NavigationView.OnNa
 
                 // If an error is found, handle the failure to start.
                 // Check permissions to see if failure may be due to lack of permissions.
-                boolean permissionCheck1 = ContextCompat.checkSelfPermission(QuanLySuCo.this,
+                boolean permissionCheck1 = ContextCompat.checkSelfPermission(QuanLyChatLuongNuoc.this,
                         reqPermissions[0]) == PackageManager.PERMISSION_GRANTED;
-                boolean permissionCheck2 = ContextCompat.checkSelfPermission(QuanLySuCo.this,
+                boolean permissionCheck2 = ContextCompat.checkSelfPermission(QuanLyChatLuongNuoc.this,
                         reqPermissions[1]) == PackageManager.PERMISSION_GRANTED;
 
                 if (!(permissionCheck1 && permissionCheck2)) {
                     // If permissions are not already granted, request permission from the user.
-                    ActivityCompat.requestPermissions(QuanLySuCo.this, reqPermissions, requestCode);
+                    ActivityCompat.requestPermissions(QuanLyChatLuongNuoc.this, reqPermissions, requestCode);
                 } else {
                     // Report other unknown failure types to the user - for example, location services may not
                     // be enabled on the device.
 //                    String message = String.format("Error in DataSourceStatusChangedListener: %s", dataSourceStatusChangedEvent
 //                            .getSource().getLocationDataSource().getError().getMessage());
-//                    Toast.makeText(QuanLySuCo.this, message, Toast.LENGTH_LONG).show();
+//                    Toast.makeText(QuanLyChatLuongNuoc.this, message, Toast.LENGTH_LONG).show();
                 }
             }
         });
@@ -370,7 +371,7 @@ public class QuanLySuCo extends AppCompatActivity implements NavigationView.OnNa
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_search) {
-            QuanLySuCo.this.mListViewSearch.setVisibility(View.VISIBLE);
+            QuanLyChatLuongNuoc.this.mListViewSearch.setVisibility(View.VISIBLE);
             return true;
         }
 
@@ -418,7 +419,7 @@ public class QuanLySuCo extends AppCompatActivity implements NavigationView.OnNa
                 android.Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED ||
                 ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
                         != PackageManager.PERMISSION_GRANTED || ContextCompat.checkSelfPermission(
-                                this, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
+                this, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
             return false;
         } else return true;
     }
@@ -432,7 +433,7 @@ public class QuanLySuCo extends AppCompatActivity implements NavigationView.OnNa
             mLocationDisplay.startAsync();
 
         } else {
-            Toast.makeText(QuanLySuCo.this, getResources().getString(R.string.location_permission_denied), Toast.LENGTH_SHORT).show();
+            Toast.makeText(QuanLyChatLuongNuoc.this, getResources().getString(R.string.location_permission_denied), Toast.LENGTH_SHORT).show();
         }
     }
 

@@ -54,20 +54,6 @@ public class TraCuuAdapter extends ArrayAdapter<TraCuuAdapter.Item> {
         Item item = items.get(position);
 
         LinearLayout layout = (LinearLayout) convertView.findViewById(R.id.layout_tracuu);
-        switch (item.getTrangThai()) {
-            //chưa sửa chữa
-            case 0:
-                layout.setBackgroundColor(ContextCompat.getColor(context, R.color.color_chua_sua_chua));
-                break;
-            //đã sửa chữa
-            case 1:
-                layout.setBackgroundColor(ContextCompat.getColor(context, R.color.color_da_sua_chua));
-                break;
-            //đang sửa chữa
-            case 2:
-                layout.setBackgroundColor(ContextCompat.getColor(context, R.color.color_dang_sua_chua));
-                break;
-        }
 
         TextView txtID = (TextView) convertView.findViewById(R.id.txt_tracuu_id);
         //todo
@@ -91,14 +77,12 @@ public class TraCuuAdapter extends ArrayAdapter<TraCuuAdapter.Item> {
 
         int objectID;
         String id;
-        int trangThai;
         String ngayCapNhat;
         String diaChi;
 
-        public Item(int objectID, String id, int trangThai, String ngayCapNhat, String diaChi) {
+        public Item(int objectID, String id,String ngayCapNhat, String diaChi) {
             this.objectID = objectID;
             this.id = id;
-            this.trangThai = trangThai;
             this.ngayCapNhat = ngayCapNhat;
             this.diaChi = diaChi;
         }
@@ -119,14 +103,6 @@ public class TraCuuAdapter extends ArrayAdapter<TraCuuAdapter.Item> {
             this.id = id;
         }
 
-        public int getTrangThai() {
-            return trangThai;
-        }
-
-        public void setTrangThai(int trangThai) {
-            this.trangThai = trangThai;
-        }
-
         public String getNgayCapNhat() {
             return ngayCapNhat;
         }
@@ -143,9 +119,5 @@ public class TraCuuAdapter extends ArrayAdapter<TraCuuAdapter.Item> {
             this.diaChi = diaChi;
         }
 
-        @Override
-        public String toString() {
-            return "Item{" + "objectID=" + objectID + ", id='" + id + '\'' + ", trangThai=" + trangThai + ", ngayCapNhat='" + ngayCapNhat + '\'' + ", diaChi='" + diaChi + '\'' + '}';
-        }
     }
 }

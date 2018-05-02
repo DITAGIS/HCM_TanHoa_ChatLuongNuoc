@@ -1,22 +1,16 @@
 package qlsctanhoa.hcm.ditagis.com.qlsc;
 
-import android.content.DialogInterface;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.format.DateFormat;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
 import android.widget.AdapterView;
-import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
-import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.esri.arcgisruntime.concurrent.ListenableFuture;
@@ -40,7 +34,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
-import qlsctanhoa.hcm.ditagis.com.qlsc.adapter.CustomAdapter;
 import qlsctanhoa.hcm.ditagis.com.qlsc.adapter.ThongKeAdapter;
 import qlsctanhoa.hcm.ditagis.com.qlsc.utities.Constant;
 import qlsctanhoa.hcm.ditagis.com.qlsc.utities.TimePeriodReport;
@@ -48,7 +41,7 @@ import qlsctanhoa.hcm.ditagis.com.qlsc.utities.TimePeriodReport;
 public class ThongKeActivity extends AppCompatActivity {
     private TextView txtTongSuCo, txtChuaSua, txtDangSua, txtDaSua;
     private TextView txtPhanTramChuaSua, txtPhanTramDangSua, txtPhanTramDaSua;
-    private QuanLySuCo mQuanLySuCo;
+    private QuanLyChatLuongNuoc mQuanLyChatLuongNuoc;
     private ServiceFeatureTable mServiceFeatureTable;
     private ThongKeAdapter thongKeAdapter;
     private PieChart mChart;
@@ -198,7 +191,7 @@ public class ThongKeActivity extends AppCompatActivity {
             txtThoiGian.setText(item.getThoigianhienthi());
             txtThoiGian.setVisibility(View.VISIBLE);
         }
-        final int[] tongloaitrangthai = {0, 0, 0, 0};// tong, chuasua, dangsua, dasua
+        final int[] tongloaitrangthai = {0};// tong, chuasua, dangsua, dasua
         String whereClause = "1 = 1";
         if (item.getThoigianbatdau() == null || item.getThoigianketthuc() == null) {
             whereClause = "1 = 1";
@@ -216,10 +209,6 @@ public class ThongKeActivity extends AppCompatActivity {
                     while (iterator.hasNext()) {
                         Feature item = (Feature) iterator.next();
                         tongloaitrangthai[0] += 1;
-                        int trangthai = Integer.parseInt(item.getAttributes().get(Constant.TRANG_THAI).toString());
-                        if (trangthai == 0) tongloaitrangthai[1] += 1;
-                        else if (trangthai == 2) tongloaitrangthai[2] += 1;
-                        else if (trangthai == 1) tongloaitrangthai[3] += 1;
                     }
                     displayReport(tongloaitrangthai);
 
@@ -236,25 +225,6 @@ public class ThongKeActivity extends AppCompatActivity {
 
     private void displayReport(int[] tongloaitrangthai) {
         txtTongSuCo.setText(getString(R.string.nav_thong_ke_tong_su_co) + tongloaitrangthai[0]);
-        txtChuaSua.setText(tongloaitrangthai[1] + "");
-        txtDangSua.setText(tongloaitrangthai[2] + "");
-        txtDaSua.setText(tongloaitrangthai[3] + "");
-
-        double percentChuaSua, percentDangSua, percentDaSua;
-        if (tongloaitrangthai[0] > 0) {
-            percentChuaSua = tongloaitrangthai[1] * 100 / tongloaitrangthai[0];
-            percentDangSua = tongloaitrangthai[2] * 100 / tongloaitrangthai[0];
-            percentDaSua = tongloaitrangthai[3] * 100 / tongloaitrangthai[0];
-        } else {
-            percentChuaSua = percentDangSua = percentDaSua = 0.00;
-        }
-        txtPhanTramChuaSua.setText(percentChuaSua + "%");
-        txtPhanTramDangSua.setText(percentDangSua + "%");
-        txtPhanTramDaSua.setText(percentDaSua + "%");
-        mChart = (PieChart) findViewById(R.id.piechart);
-        mChart = configureChart(mChart);
-        mChart = setData(mChart, tongloaitrangthai);
-        mChart.animateXY(1500, 1500);
     }
 
     public PieChart configureChart(PieChart chart) {

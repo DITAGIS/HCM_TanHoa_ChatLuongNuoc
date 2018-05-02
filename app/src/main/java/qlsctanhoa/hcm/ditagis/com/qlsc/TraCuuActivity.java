@@ -158,7 +158,7 @@ public class TraCuuActivity extends AppCompatActivity {
                         if ((Calendar) attributes.get(Constant.NGAY_CAP_NHAT) != null)
                             format_date = Constant.DATE_FORMAT.format(((Calendar) attributes.get(Constant.NGAY_CAP_NHAT)).getTime());
 
-                        mTraCuuAdapter.add(new TraCuuAdapter.Item(Integer.parseInt(attributes.get(Constant.OBJECTID).toString()), attributes.get(Constant.IDSU_CO).toString(), Integer.parseInt(attributes.get(Constant.TRANG_THAI).toString()), format_date,viTri));
+                        mTraCuuAdapter.add(new TraCuuAdapter.Item(Integer.parseInt(attributes.get(Constant.OBJECTID).toString()), attributes.get(Constant.IDDIEM_DANH_GIA).toString(), format_date,viTri));
                         mTraCuuAdapter.notifyDataSetChanged();
 
                     }
@@ -217,7 +217,7 @@ public class TraCuuActivity extends AppCompatActivity {
             if (datePicker != null) {
                 Calendar calendar = new GregorianCalendar(datePicker.getYear(), datePicker.getMonth(), datePicker.getDayOfMonth());
                 String dateTime = Constant.DATE_FORMAT.format(calendar.getTime());
-                this.date = Constant.IDSU_CO + " like '%" + dateTime + "'";
+                this.date = Constant.IDDIEM_DANH_GIA + " like '%" + dateTime + "'";
             }
 //                this.date = "NgayCapNhat >= '" + datePicker.getYear() + "/" + datePicker.getMonth() + "/" + datePicker.getDayOfMonth() + "'";
         }

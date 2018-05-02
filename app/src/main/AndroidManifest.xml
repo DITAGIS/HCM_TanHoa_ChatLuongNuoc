@@ -26,7 +26,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".QuanLySuCo"
+            android:name=".QuanLyChatLuongNuoc"
             android:label="@string/app_name"
             android:launchMode="singleTop"
             android:theme="@style/AppTheme.NoActionBar">
@@ -39,14 +39,14 @@
         <activity
             android:name=".ThongKeActivity"
             android:label="Thống kê"
-            android:parentActivityName=".QuanLySuCo" />
+            android:parentActivityName=".QuanLyChatLuongNuoc" />
         <activity
             android:name=".TraCuuActivity"
             android:label="Tra cứu thông tin"
-            android:parentActivityName=".QuanLySuCo" />
+            android:parentActivityName=".QuanLyChatLuongNuoc" />
         <activity android:name=".SettingsActivity"
             android:label="Cài đặt"
-            android:parentActivityName=".QuanLySuCo"
+            android:parentActivityName=".QuanLyChatLuongNuoc"
             ></activity>
     </application>
 

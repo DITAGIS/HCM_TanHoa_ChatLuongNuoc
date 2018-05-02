@@ -13,16 +13,14 @@ public class Constant {
     public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd_MM_yyyy");
     private SettingsAdapter.Item[] mSettingsItems;
     public static final String OBJECTID = "OBJECTID";
-    public static final String IDSU_CO = "IDSuCo";
-    public static final String VI_TRI = "ViTri";
-    public static final String TRANG_THAI = "TrangThai";
+    public static final String IDDIEM_DANH_GIA = "IDDiemDanhGia";
+    public static final String VI_TRI = "ViTriDiemDanhGia";
     public static final String NGAY_CAP_NHAT = "NgayCapNhat";
-    public static final String NGAY_THONG_BAO = "NgayThongBao";
     public static final int REQUEST_CODE = 99;
     public static final String[] CODEID_DISTRICT = {null, "768", "766", "767"};
     public static final String[] CODE_PHANLOAI = {null, "1", "2"};
 
-    public static final String NAME_DIEMSUCO = "DIEMSUCO";
+    public static final String NAME_DIEMDANHGIANUOC = "DIEMDANHGIANUOC";
 
     private static Constant mInstance = null;
 

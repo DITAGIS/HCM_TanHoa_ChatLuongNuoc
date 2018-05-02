@@ -4,13 +4,13 @@
     <string name="license">runtimelite,1000,rud6046938574,none,4N5X0H4AH5JB003AD169</string>
     <string name="action_search">Tìm kiếm</string>
 
-    <string name="app_name">QLCLN Tân Hòa</string>
+    <string name="app_name">QL chất lượng nước Tân Hòa</string>
     <string name="dialog_title_add">Thêm sự cố</string>
     <string name="btn_OK">OK</string>
     <string name="btn_save">Lưu thay đổi</string>
     <string name="btn_cancel">Hủy</string>
     <string name="quit">THOÁT</string>
-    <string name="title_su_co">Sự cố</string>
+    <string name="title_layer">Điểm đánh giá nước</string>
     <string name="people_info_title">Thông tin liên hệ</string>
     <string name="hoten_field">Họ và tên</string>
     <string name="sdt_field">Số điện thoại</string>
@@ -24,10 +24,7 @@
 
     <string name="path_saveImage">.qlsc</string>
     <string name="attachment">attachment</string>
-    <!--<string name="world_elevation_service">https://ditagis.com:6443/arcgis/rest/services/HoChiMinh/SuCo_TanHoa/MapServer</string>-->
-    <!--<string name="service_feature_table">https://sawagis.vn/arcgis/rest/services/TanHoa/TanHoaSuCo/FeatureServer/0</string>-->
-    <string name="world_elevation_service">http://113.161.88.180:800/arcgis/rest/services/TanHoa/TanHoaSuCo/MapServer</string>
-    <string name="service_feature_table">http://113.161.88.180:800/arcgis/rest/services/TanHoa/TanHoaSuCo/FeatureServer/0</string>
+    <string name="service_feature_table">http://113.161.88.180:800/arcgis/rest/services/TanHoa/ChatLuongNuoc/FeatureServer/0</string>
 
     <string name="tongloaitrangthai">tongloaitrangthai</string>
     <string name="title_activity_tra_cuu">TraCuuActivity</string>

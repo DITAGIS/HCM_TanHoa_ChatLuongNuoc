@@ -42,7 +42,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
-import qlsctanhoa.hcm.ditagis.com.qlsc.QuanLySuCo;
+import qlsctanhoa.hcm.ditagis.com.qlsc.QuanLyChatLuongNuoc;
 import qlsctanhoa.hcm.ditagis.com.qlsc.R;
 import qlsctanhoa.hcm.ditagis.com.qlsc.adapter.FeatureViewMoreInfoAdapter;
 import qlsctanhoa.hcm.ditagis.com.qlsc.async.EditAsync;
@@ -50,7 +50,7 @@ import qlsctanhoa.hcm.ditagis.com.qlsc.async.NotifyDataSetChangeAsync;
 import qlsctanhoa.hcm.ditagis.com.qlsc.libs.FeatureLayerDTG;
 
 public class Popup extends AppCompatActivity {
-    private QuanLySuCo mMainActivity;
+    private QuanLyChatLuongNuoc mMainActivity;
     private ArcGISFeature mSelectedArcGISFeature = null;
     private ServiceFeatureTable mServiceFeatureTable;
     private Callout mCallout;
@@ -58,7 +58,7 @@ public class Popup extends AppCompatActivity {
     private List<String> lstFeatureType;
     private LinearLayout linearLayout;
 
-    public Popup(QuanLySuCo mainActivity, ServiceFeatureTable mServiceFeatureTable, Callout callout) {
+    public Popup(QuanLyChatLuongNuoc mainActivity, ServiceFeatureTable mServiceFeatureTable, Callout callout) {
         this.mMainActivity = mainActivity;
         this.mServiceFeatureTable = mServiceFeatureTable;
         this.mCallout = callout;
@@ -78,26 +78,13 @@ public class Popup extends AppCompatActivity {
         for (Field field : this.mSelectedArcGISFeature.getFeatureTable().getFields()) {
             Object value = attributes.get(field.getName());
             switch (field.getName()) {
-                case Constant.IDSU_CO:
+                case Constant.IDDIEM_DANH_GIA:
                     if (value != null)
                         ((TextView) linearLayout.findViewById(R.id.txt_id_su_co)).setText(value.toString());
                     break;
                 case Constant.VI_TRI:
                     if (value != null)
                         ((TextView) linearLayout.findViewById(R.id.txt_vi_tri_su_co)).setText(value.toString());
-                    break;
-                case Constant.TRANG_THAI:
-                    if (value != null) {
-                        List<FeatureType> featureTypes = mSelectedArcGISFeature.getFeatureTable().getFeatureTypes();
-                        String valueFeatureType = getValueFeatureType(featureTypes, value.toString()).toString();
-                        if (valueFeatureType != null)
-                            ((TextView) linearLayout.findViewById(R.id.txt_trang_thai)).setText(valueFeatureType);
-                    }
-                    break;
-                case Constant.NGAY_CAP_NHAT:
-                    if (value != null)
-                        ((TextView) linearLayout.findViewById(R.id.txt_ngay_cap_nhat)).
-                                setText(Constant.DATE_FORMAT.format(((Calendar) value).getTime()));
                     break;
             }
         }
@@ -110,7 +97,7 @@ public class Popup extends AppCompatActivity {
             lstFeatureType.add(mSelectedArcGISFeature.getFeatureTable().getFeatureTypes().get(i).getName());
         }
         LayoutInflater inflater = LayoutInflater.from(this.mMainActivity.getApplicationContext());
-        linearLayout = (LinearLayout) inflater.inflate(R.layout.layout_thongtinsuco, null);
+        linearLayout = (LinearLayout) inflater.inflate(R.layout.layout_thongtin_diemdanhgianuoc, null);
         refressPopup();
         if (mCallout != null) mCallout.dismiss();
 
@@ -150,7 +137,7 @@ public class Popup extends AppCompatActivity {
         String typeIdField = mSelectedArcGISFeature.getFeatureTable().getTypeIdField();
         for (Field field : this.mSelectedArcGISFeature.getFeatureTable().getFields()) {
             Object value = attr.get(field.getName());
-            if (field.getName().equals(Constant.IDSU_CO)) {
+            if (field.getName().equals(Constant.IDDIEM_DANH_GIA)) {
                 if (value != null)
                     ((TextView) layout.findViewById(R.id.txt_alertdialog_id_su_co)).setText(value.toString());
             } else {
