@@ -24,7 +24,8 @@
 
     <string name="path_saveImage">.qlsc</string>
     <string name="attachment">attachment</string>
-    <string name="service_feature_table">http://113.161.88.180:800/arcgis/rest/services/TanHoa/ChatLuongNuoc/FeatureServer/0</string>
+    <string name="url_service_diemdanhgianuoc">http://113.161.88.180:800/arcgis/rest/services/TanHoa/ChatLuongNuoc/FeatureServer/0</string>
+    <string name="url_service_thoigianchatluongnuoc">http://113.161.88.180:800/arcgis/rest/services/TanHoa/ChatLuongNuoc/FeatureServer/1</string>
 
     <string name="tongloaitrangthai">tongloaitrangthai</string>
     <string name="title_activity_tra_cuu">TraCuuActivity</string>
@@ -61,8 +62,7 @@
     <string name="preference_settings_tuy_chon_tim_kiem_co_san">Tìm kiếm sự cố</string>
     <string name="preference_settings_tuy_chon_tim_kiem_chua_co">Tìm vị trí</string>
 
-    <string name="format_startday_yearfirst">yyyy-MM-dd 00:00:00</string>
-    <string name="format_endday_yearfirst">yyyy-MM-dd 23:59:59</string>
+    <string name="format_day_yearfirst">yyyy-MM-dd HH:mm:ss</string>
     <string name="format_time_day_month_year">dd/MM/yyyy</string>
 
 

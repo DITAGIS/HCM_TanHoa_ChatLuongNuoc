@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context="qlsctanhoa.hcm.ditagis.com.qlsc.QuanLyChatLuongNuoc"
+    tools:context="qlsctanhoa.hcm.ditagis.com.qlcln.tanhoa.hcm.ditagis.com.qlcln.QuanLyChatLuongNuoc"
     tools:showIn="@layout/app_bar_quan_ly_su_co">
 
 

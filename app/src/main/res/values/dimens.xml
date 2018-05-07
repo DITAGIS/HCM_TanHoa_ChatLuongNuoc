@@ -25,4 +25,7 @@
     <dimen name="width_title_item_docso">50dp</dimen>
     <dimen name="width_title_item_popup">100dp</dimen>
 
+    <dimen name="font_size_textview">15sp</dimen>
+    <dimen name="field_horizontal_margin">10dp</dimen>
+
 </resources>

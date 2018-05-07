@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="qlsctanhoa.hcm.ditagis.com.qlsc.QuanLyChatLuongNuoc">
+    tools:context="qlsctanhoa.hcm.ditagis.com.qlcln.tanhoa.hcm.ditagis.com.qlcln.QuanLyChatLuongNuoc">
 
     <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
