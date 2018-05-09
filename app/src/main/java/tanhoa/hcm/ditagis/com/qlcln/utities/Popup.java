@@ -226,7 +226,8 @@ public class Popup extends AppCompatActivity implements View.OnClickListener {
                     dialog.show();
                 }
             });
-            List<ThoiGianChatLuongNuoc> items = thoiGianChatLuongNuocDB.getTable_ThoiGianChatLuongNuoc(idDiemDanhGia);
+            List<ThoiGianChatLuongNuoc> items = new ArrayList<>();
+//                    thoiGianChatLuongNuocDB.getTable_ThoiGianChatLuongNuoc(idDiemDanhGia);
             ThoiGianCLNAdapter thoiTgTrongTrotAdapter = new ThoiGianCLNAdapter(mainActivity, items);
 
             if (items != null) listView.setAdapter(thoiTgTrongTrotAdapter);

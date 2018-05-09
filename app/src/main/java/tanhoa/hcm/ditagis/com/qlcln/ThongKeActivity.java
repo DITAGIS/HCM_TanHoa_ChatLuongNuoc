@@ -223,7 +223,7 @@ public class ThongKeActivity extends AppCompatActivity {
     }
 
     private void displayReport(int[] tongloaitrangthai) {
-        txtTongSuCo.setText(getString(R.string.nav_thong_ke_tong_su_co) + tongloaitrangthai[0]);
+        txtTongSuCo.setText(getString(R.string.nav_thong_ke_tong_diem) + tongloaitrangthai[0]);
     }
 
     public PieChart configureChart(PieChart chart) {
