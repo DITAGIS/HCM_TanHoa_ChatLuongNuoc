@@ -239,7 +239,7 @@ public class MapViewHandler extends Activity {
                         }
                         String viTri = "";
                         try {
-                            viTri = attributes.get(Constant.VI_TRI).toString();
+                            viTri = attributes.get(Constant.DIACHI).toString();
                         } catch (Exception e) {
 
                         }
@@ -375,7 +375,7 @@ public class MapViewHandler extends Activity {
                                 attrs.put(key, geocodeResult.getAttributes().get(key));
                             }
                             String address = geocodeResult.getAttributes().get("LongLabel").toString();
-                            feature.getAttributes().put(Constant.VI_TRI, address);
+                            feature.getAttributes().put(Constant.DIACHI, address);
                         }
                         String searchStr = "";
                         String dateTime = "";

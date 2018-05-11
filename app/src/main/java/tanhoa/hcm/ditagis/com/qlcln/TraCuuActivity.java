@@ -151,7 +151,7 @@ public class TraCuuActivity extends AppCompatActivity {
                         Map<String, Object> attributes = item.getAttributes();
                         String format_date = "", viTri = "";
                         try{
-                            viTri =  attributes.get(Constant.VI_TRI).toString();
+                            viTri =  attributes.get(Constant.DIACHI).toString();
                         }catch (Exception e){
 
                         }

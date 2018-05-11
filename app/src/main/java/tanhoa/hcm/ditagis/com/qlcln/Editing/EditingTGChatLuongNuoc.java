@@ -25,16 +25,13 @@ import com.esri.arcgisruntime.data.CodedValueDomain;
 import com.esri.arcgisruntime.data.Domain;
 import com.esri.arcgisruntime.data.Feature;
 import com.esri.arcgisruntime.data.FeatureEditResult;
-import com.esri.arcgisruntime.data.FeatureQueryResult;
 import com.esri.arcgisruntime.data.Field;
-import com.esri.arcgisruntime.data.QueryParameters;
 import com.esri.arcgisruntime.data.ServiceFeatureTable;
 
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
@@ -45,7 +42,7 @@ import tanhoa.hcm.ditagis.com.qlcln.adapter.ChiTietCLNAdapter;
 import tanhoa.hcm.ditagis.com.qlcln.adapter.ThoiGianCLNAdapter;
 import tanhoa.hcm.ditagis.com.qlcln.async.NotifyChiTietCLNAdapterChangeAsync;
 import tanhoa.hcm.ditagis.com.qlcln.async.RefreshTableThoiGianCLNAsync;
-import tanhoa.hcm.ditagis.com.qlcln.entities.ThoiGianChatLuongNuoc;
+import tanhoa.hcm.ditagis.com.qlcln.entities.MauKiemNghiem;
 import tanhoa.hcm.ditagis.com.qlcln.libs.FeatureLayerDTG;
 import tanhoa.hcm.ditagis.com.qlcln.utities.Constant;
 
@@ -65,54 +62,6 @@ public class EditingTGChatLuongNuoc implements RefreshTableThoiGianCLNAsync.Asyn
         this.mainActivity = mainActivity;
         this.featureLayerDTG_thoigiancln = featureLayerDTG_thoigiancln;
         table_thoigiancln = (ServiceFeatureTable) featureLayerDTG_thoigiancln.getFeatureLayer().getFeatureTable();
-    }
-
-    private void refreshTable_ThoiGianChatLuongNuoc() {
-        final List<Feature> features = new ArrayList<>();
-        final List<ThoiGianChatLuongNuoc> thoiGianChatLuongNuocs = new ArrayList<>();
-        QueryParameters queryParameters = new QueryParameters();
-        String queryClause = "IDDiemDanhGia = '" + idDiemDanhGia + "'";
-        queryParameters.setWhereClause(queryClause);
-        final ListenableFuture<FeatureQueryResult> queryResultListenableFuture = table_thoigiancln.queryFeaturesAsync(queryParameters, ServiceFeatureTable.QueryFeatureFields.LOAD_ALL);
-        queryResultListenableFuture.addDoneListener(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    FeatureQueryResult result = queryResultListenableFuture.get();
-                    Iterator iterator = result.iterator();
-
-                    while (iterator.hasNext()) {
-                        Feature feature = (Feature) iterator.next();
-                        features.add(feature);
-                        feature.getAttributes().get("OBJECTID");
-                        ThoiGianChatLuongNuoc thoiGianChatLuongNuoc = new ThoiGianChatLuongNuoc();
-                        HashMap<String, String> attributes = new HashMap<>();
-                        attributes.put("OBJECTID", feature.getAttributes().get("OBJECTID").toString());
-                        attributes.put("IDDiemDanhGia", getValueAttributes(feature, "IDDiemDanhGia"));
-                        attributes.put("DienTich", getValueAttributes(feature, "DienTich"));
-                        attributes.put("TinhTrangNuoc", getValueAttributes(feature, "TinhTrangNuoc"));
-                        attributes.put("MuiNuoc", getValueAttributes(feature, "MuiNuoc"));
-                        attributes.put("MauNuoc", getValueAttributes(feature, "MauNuoc"));
-                        Calendar ngayCapNhat = (Calendar) feature.getAttributes().get("NgayCapNhat");
-                        String format = null;
-                        if (ngayCapNhat != null) {
-                            format = Constant.DATE_FORMAT.format(ngayCapNhat.getTime());
-                        }
-                        attributes.put("NgayCapNhat", format);
-                        thoiGianChatLuongNuoc.setString_attributes(attributes);
-                        thoiGianChatLuongNuocs.add(thoiGianChatLuongNuoc);
-                    }
-                    table_feature = features;
-                    thoiTgTrongTrotAdapter.clear();
-                    thoiTgTrongTrotAdapter.setItems(thoiGianChatLuongNuocs);
-                    thoiTgTrongTrotAdapter.notifyDataSetChanged();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                } catch (ExecutionException e) {
-                    e.printStackTrace();
-                }
-            }
-        });
     }
 
     public void showThoiGianChatLuongNuoc(final ArcGISFeature mSelectedArcGISFeature) {
@@ -141,7 +90,7 @@ public class EditingTGChatLuongNuoc implements RefreshTableThoiGianCLNAsync.Asyn
             listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, final long id) {
-                    final ThoiGianChatLuongNuoc itemAtPosition = thoiTgTrongTrotAdapter.getItems().get(position);
+                    final MauKiemNghiem itemAtPosition = thoiTgTrongTrotAdapter.getItems().get(position);
                     HashMap<String, String> attributes = itemAtPosition.getString_attributes();
                     View layout_chitiet_chatluongnuoc = mainActivity.getLayoutInflater().inflate(R.layout.layout_title_listview, null);
                     ListView listview_chitietchatluongnuoc = (ListView) layout_chitiet_chatluongnuoc.findViewById(R.id.listview);
@@ -165,7 +114,8 @@ public class EditingTGChatLuongNuoc implements RefreshTableThoiGianCLNAsync.Asyn
                                     item.setValue(((String) value).split(" ")[0]);
                                     break;
                                 default:
-                                    item.setValue(attributes.get(field.getName()));
+                                    if (attributes.get(field.getName()) != null)
+                                        item.setValue(attributes.get(field.getName()));
                             }
                         }
                         for (String updateField : updateFields) {
@@ -249,7 +199,7 @@ public class EditingTGChatLuongNuoc implements RefreshTableThoiGianCLNAsync.Asyn
 
                 }
             });
-            List<ThoiGianChatLuongNuoc> thoiGianChatLuongNuocs = new ArrayList<>();
+            List<MauKiemNghiem> thoiGianChatLuongNuocs = new ArrayList<>();
             thoiTgTrongTrotAdapter = new ThoiGianCLNAdapter(mainActivity, thoiGianChatLuongNuocs);
             listView.setAdapter(thoiTgTrongTrotAdapter);
             getRefreshTableThoiGianCLNAsync();
@@ -259,10 +209,11 @@ public class EditingTGChatLuongNuoc implements RefreshTableThoiGianCLNAsync.Asyn
             dialog.show();
         }
     }
-    private void getRefreshTableThoiGianCLNAsync(){
-        new RefreshTableThoiGianCLNAsync(mainActivity, table_thoigiancln,thoiTgTrongTrotAdapter, new RefreshTableThoiGianCLNAsync.AsyncResponse() {
+
+    private void getRefreshTableThoiGianCLNAsync() {
+        new RefreshTableThoiGianCLNAsync(mainActivity, table_thoigiancln, thoiTgTrongTrotAdapter, new RefreshTableThoiGianCLNAsync.AsyncResponse() {
             @Override
-            public void processFinish(List<Feature> features,List<ThoiGianChatLuongNuoc> thoiGianChatLuongNuocs) {
+            public void processFinish(List<Feature> features, List<MauKiemNghiem> thoiGianChatLuongNuocs) {
                 table_feature = features;
             }
         }).execute(idDiemDanhGia);
@@ -556,13 +507,13 @@ public class EditingTGChatLuongNuoc implements RefreshTableThoiGianCLNAsync.Asyn
                 case SHORT:
                     layoutEditText.setVisibility(View.VISIBLE);
                     editText.setInputType(InputType.TYPE_CLASS_NUMBER);
-                    editText.setFilters(new InputFilter[] {new InputFilter.LengthFilter(8)});
+                    editText.setFilters(new InputFilter[]{new InputFilter.LengthFilter(8)});
                     editText.setText(item.getValue());
                     break;
                 case DOUBLE:
                     layoutEditText.setVisibility(View.VISIBLE);
                     editText.setInputType(InputType.TYPE_NUMBER_FLAG_DECIMAL);
-                    editText.setFilters(new InputFilter[] {new InputFilter.LengthFilter(8)});
+                    editText.setFilters(new InputFilter[]{new InputFilter.LengthFilter(8)});
                     editText.setText(item.getValue());
                     break;
             }
@@ -586,6 +537,8 @@ public class EditingTGChatLuongNuoc implements RefreshTableThoiGianCLNAsync.Asyn
                                 }
                                 break;
                             case TEXT:
+                                item.setValue(editText.getText().toString());
+                                break;
                             case SHORT:
                                 try {
                                     short x = Short.parseShort(editText.getText().toString());
@@ -610,7 +563,7 @@ public class EditingTGChatLuongNuoc implements RefreshTableThoiGianCLNAsync.Asyn
     }
 
     @Override
-    public void processFinish(List<Feature> features, List<ThoiGianChatLuongNuoc> thoiGianChatLuongNuocs) {
+    public void processFinish(List<Feature> features, List<MauKiemNghiem> thoiGianChatLuongNuocs) {
 
     }
 }

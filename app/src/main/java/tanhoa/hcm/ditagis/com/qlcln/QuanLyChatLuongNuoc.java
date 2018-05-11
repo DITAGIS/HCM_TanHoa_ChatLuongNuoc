@@ -47,7 +47,6 @@ import android.widget.Toast;
 
 import com.esri.arcgisruntime.ArcGISRuntimeEnvironment;
 import com.esri.arcgisruntime.ArcGISRuntimeException;
-import com.esri.arcgisruntime.data.FeatureTable;
 import com.esri.arcgisruntime.data.ServiceFeatureTable;
 import com.esri.arcgisruntime.geometry.Geometry;
 import com.esri.arcgisruntime.geometry.GeometryEngine;
@@ -77,6 +76,7 @@ import tanhoa.hcm.ditagis.com.qlcln.libs.FeatureLayerDTG;
 import tanhoa.hcm.ditagis.com.qlcln.utities.Config;
 import tanhoa.hcm.ditagis.com.qlcln.utities.Constant;
 import tanhoa.hcm.ditagis.com.qlcln.utities.ImageFile;
+import tanhoa.hcm.ditagis.com.qlcln.utities.ListConfig;
 import tanhoa.hcm.ditagis.com.qlcln.utities.MapViewHandler;
 import tanhoa.hcm.ditagis.com.qlcln.utities.MySnackBar;
 import tanhoa.hcm.ditagis.com.qlcln.utities.Popup;
@@ -132,7 +132,7 @@ public class QuanLyChatLuongNuoc extends AppCompatActivity implements Navigation
         });
         requestPermisson();
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, toolbar,R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
@@ -146,72 +146,60 @@ public class QuanLyChatLuongNuoc extends AppCompatActivity implements Navigation
         mCallout = mMapView.getCallout();
         mFeatureLayerDTGS = new ArrayList<>();
         // config feature layer service
-        ArrayList<Config> configs = Config.FeatureConfig.getConfigs();
-
+        List<Config> configs = ListConfig.getInstance(this).getConfigs();
         for (Config config : configs) {
             ServiceFeatureTable serviceFeatureTable = new ServiceFeatureTable(config.getUrl());
             FeatureLayer featureLayer = new FeatureLayer(serviceFeatureTable);
             featureLayer.setName(config.getAlias());
             featureLayer.setMaxScale(0);
             featureLayer.setMinScale(1000000);
-            FeatureLayerDTG featureLayerDTG = new FeatureLayerDTG(featureLayer);
-            featureLayerDTG.setOutFields(config.getOutField());
-            featureLayerDTG.setQueryFields(config.getQueryField());
-            featureLayerDTG.setTitleLayer(config.getAlias());
-            featureLayerDTG.setUpdateFields(config.getUpdateField());
             featureLayer.setId(config.getName());
-            featureLayer.setPopupEnabled(true);
-            mFeatureLayerDTGS.add(featureLayerDTG);
-            if (config.getName().equals(Constant.NAME_DIEMDANHGIANUOC)) {
-                mMapViewHandler = new MapViewHandler(featureLayerDTG,mCallout, mMapView,QuanLyChatLuongNuoc.this);
+            FeatureLayerDTG featureLayerDTG = new FeatureLayerDTG(featureLayer, config.getAlias(), config.isShowOnMap());
+            featureLayerDTG.setOutFields(config.getOutFields());
+            featureLayerDTG.setQueryFields(config.getQueryFields());
+            featureLayerDTG.setUpdateFields(config.getUpdateFields());
+            featureLayerDTG.setShowOnMap(config.isShowOnMap());
+
+            if(config.getName() != null && config.getName().equals(getString(R.string.name_diemdanhgianuoc))){
+                featureLayer.setPopupEnabled(true);
+                mMapViewHandler = new MapViewHandler(featureLayerDTG, mCallout, mMapView, QuanLyChatLuongNuoc.this);
             }
+            mFeatureLayerDTGS.add(featureLayerDTG);
             mMap.getOperationalLayers().add(featureLayer);
-
         }
-        LayerList layers = mMap.getOperationalLayers();
-        popupInfos = new Popup(QuanLyChatLuongNuoc.this,mFeatureLayerDTGS, mCallout);
+        popupInfos = new Popup(QuanLyChatLuongNuoc.this, mFeatureLayerDTGS, mCallout);
         mMapViewHandler.setPopupInfos(popupInfos);
-
         mMap.addDoneLoadingListener(new Runnable() {
             @Override
             public void run() {
                 LinearLayout linnearDisplayLayer = (LinearLayout) findViewById(R.id.linnearDisplayLayer);
-                LayerList layers = mMap.getOperationalLayers();
                 int states[][] = {{android.R.attr.state_checked}, {}};
                 int colors[] = {R.color.colorTextColor_1, R.color.colorTextColor_1};
-                for (final Layer layer : layers) {
-//                    if (layer.getName().equals(Config.Alias.alias_diemsuco)) continue;
-                    CheckBox checkBox = new CheckBox(linnearDisplayLayer.getContext());
+                for (final FeatureLayerDTG layer : mFeatureLayerDTGS) {
+                    if (layer.isShowOnMap()) {
+                        CheckBox checkBox = new CheckBox(linnearDisplayLayer.getContext());
+                        checkBox.setText(layer.getTitleLayer());
+                        checkBox.setChecked(true);
+                        CompoundButtonCompat.setButtonTintList(checkBox, new ColorStateList(states, colors));
+                        linnearDisplayLayer.addView(checkBox);
+                        checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                            @Override
+                            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                                // TODO Auto-generated method stub
+                                if (buttonView.isChecked()) {
+                                    layer.getFeatureLayer().setVisible(true);
+                                } else {
+                                    layer.getFeatureLayer().setVisible(false);
+                                }
 
-                    if (layer.getName().trim().equals("")) {
-                        checkBox.setText(Config.Alias.alias_diemdanhgianuoc);
-                    } else {
-                        checkBox.setText(layer.getName());
-                    }
-                    checkBox.setChecked(true);
-                    CompoundButtonCompat.setButtonTintList(checkBox, new ColorStateList(states, colors));
-                    linnearDisplayLayer.addView(checkBox);
-
-                    checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-
-                        @Override
-                        public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                            // TODO Auto-generated method stub
-
-                            if (buttonView.isChecked()) {
-                                layer.setVisible(true);
-                            } else {
-                                layer.setVisible(false);
                             }
-
-                        }
-                    });
-
+                        });
+                    }
                 }
                 for (int i = 0; i < linnearDisplayLayer.getChildCount(); i++) {
                     View v = linnearDisplayLayer.getChildAt(i);
                     if (v instanceof CheckBox) {
-                        if (((CheckBox) v).getText().equals(Config.Alias.alias_diemdanhgianuoc))
+                        if (((CheckBox) v).getText().equals(getString(R.string.alias_diemdanhgianuoc)))
                             ((CheckBox) v).setChecked(true);
                         else ((CheckBox) v).setChecked(false);
                     }
@@ -267,6 +255,7 @@ public class QuanLyChatLuongNuoc extends AppCompatActivity implements Navigation
         findViewById(R.id.floatBtnLocation).setOnClickListener(this);
         findViewById(R.id.floatBtnHome).setOnClickListener(this);
     }
+
     private void setLicense() {
         //way 1
         ArcGISRuntimeEnvironment.setLicense(getString(R.string.license));
@@ -289,12 +278,9 @@ public class QuanLyChatLuongNuoc extends AppCompatActivity implements Navigation
         List<Object> daxulyValue = new ArrayList<>();
         daxulyValue.add(1);
 
-        uniqueValueRenderer.getUniqueValues().add(new UniqueValueRenderer.UniqueValue(
-                "Chưa xử lý", "Chưa xử lý", chuaxuly, chuaxulyValue));
-        uniqueValueRenderer.getUniqueValues().add(new UniqueValueRenderer.UniqueValue(
-                "Chưa xử lý", "Chưa xử lý", dangxyly, dangxylyValue));
-        uniqueValueRenderer.getUniqueValues().add(new UniqueValueRenderer.UniqueValue(
-                "Chưa xử lý", "Chưa xử lý", daxuly, daxulyValue));
+        uniqueValueRenderer.getUniqueValues().add(new UniqueValueRenderer.UniqueValue("Chưa xử lý", "Chưa xử lý", chuaxuly, chuaxulyValue));
+        uniqueValueRenderer.getUniqueValues().add(new UniqueValueRenderer.UniqueValue("Chưa xử lý", "Chưa xử lý", dangxyly, dangxylyValue));
+        uniqueValueRenderer.getUniqueValues().add(new UniqueValueRenderer.UniqueValue("Chưa xử lý", "Chưa xử lý", daxuly, daxulyValue));
         mSuCoTanHoaLayer.setRenderer(uniqueValueRenderer);
     }
 
@@ -313,10 +299,8 @@ public class QuanLyChatLuongNuoc extends AppCompatActivity implements Navigation
 
                 // If an error is found, handle the failure to start.
                 // Check permissions to see if failure may be due to lack of permissions.
-                boolean permissionCheck1 = ContextCompat.checkSelfPermission(QuanLyChatLuongNuoc.this,
-                        reqPermissions[0]) == PackageManager.PERMISSION_GRANTED;
-                boolean permissionCheck2 = ContextCompat.checkSelfPermission(QuanLyChatLuongNuoc.this,
-                        reqPermissions[1]) == PackageManager.PERMISSION_GRANTED;
+                boolean permissionCheck1 = ContextCompat.checkSelfPermission(QuanLyChatLuongNuoc.this, reqPermissions[0]) == PackageManager.PERMISSION_GRANTED;
+                boolean permissionCheck2 = ContextCompat.checkSelfPermission(QuanLyChatLuongNuoc.this, reqPermissions[1]) == PackageManager.PERMISSION_GRANTED;
 
                 if (!(permissionCheck1 && permissionCheck2)) {
                     // If permissions are not already granted, request permission from the user.
@@ -411,20 +395,10 @@ public class QuanLyChatLuongNuoc extends AppCompatActivity implements Navigation
     }
 
     public boolean requestPermisson() {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) !=
-                PackageManager.PERMISSION_GRANTED || ContextCompat.checkSelfPermission(this,
-                Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED ||
-                ContextCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE)
-                        != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA,
-                    Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.CALL_PHONE,
-                    Manifest.permission.READ_PHONE_STATE}, REQUEST_ID_IMAGE_CAPTURE);
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED || ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED || ContextCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.CALL_PHONE, Manifest.permission.READ_PHONE_STATE}, REQUEST_ID_IMAGE_CAPTURE);
         }
-        if (Build.VERSION.SDK_INT >= 23 && ContextCompat.checkSelfPermission(this,
-                android.Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED ||
-                ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                        != PackageManager.PERMISSION_GRANTED || ContextCompat.checkSelfPermission(
-                this, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
+        if (Build.VERSION.SDK_INT >= 23 && ContextCompat.checkSelfPermission(this, android.Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED || ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED || ContextCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
             return false;
         } else return true;
     }

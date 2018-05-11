@@ -33,16 +33,13 @@ import com.esri.arcgisruntime.data.FeatureTable;
 import com.esri.arcgisruntime.data.FeatureType;
 import com.esri.arcgisruntime.data.Field;
 import com.esri.arcgisruntime.data.ServiceFeatureTable;
-import com.esri.arcgisruntime.layers.FeatureLayer;
 import com.esri.arcgisruntime.loadable.LoadStatus;
-import com.esri.arcgisruntime.mapping.LayerList;
 import com.esri.arcgisruntime.mapping.view.Callout;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
@@ -50,13 +47,9 @@ import java.util.concurrent.ExecutionException;
 import tanhoa.hcm.ditagis.com.qlcln.Editing.EditingTGChatLuongNuoc;
 import tanhoa.hcm.ditagis.com.qlcln.QuanLyChatLuongNuoc;
 import tanhoa.hcm.ditagis.com.qlcln.R;
-import tanhoa.hcm.ditagis.com.qlcln.adapter.ChiTietCLNAdapter;
 import tanhoa.hcm.ditagis.com.qlcln.adapter.FeatureViewMoreInfoAdapter;
-import tanhoa.hcm.ditagis.com.qlcln.adapter.ThoiGianCLNAdapter;
 import tanhoa.hcm.ditagis.com.qlcln.async.EditAsync;
 import tanhoa.hcm.ditagis.com.qlcln.async.NotifyDataSetChangeAsync;
-import tanhoa.hcm.ditagis.com.qlcln.conectDB.ThoiGianChatLuongNuocDB;
-import tanhoa.hcm.ditagis.com.qlcln.entities.ThoiGianChatLuongNuoc;
 import tanhoa.hcm.ditagis.com.qlcln.libs.FeatureLayerDTG;
 
 public class Popup extends AppCompatActivity implements View.OnClickListener {
@@ -67,7 +60,6 @@ public class Popup extends AppCompatActivity implements View.OnClickListener {
     private FeatureLayerDTG mFeatureLayerDTG;
     private List<String> lstFeatureType;
     private LinearLayout linearLayout;
-    private ThoiGianChatLuongNuocDB thoiGianChatLuongNuocDB;
     private FeatureTable table_thoigiancln;
     private FeatureLayerDTG featureLayerDTG_thoigiancln;
     private EditingTGChatLuongNuoc editingTGChatLuongNuoc;
@@ -75,11 +67,10 @@ public class Popup extends AppCompatActivity implements View.OnClickListener {
 
     public Popup(QuanLyChatLuongNuoc mainActivity,List<FeatureLayerDTG> layerDTGS, Callout callout) {
         this.mainActivity = mainActivity;
-        this.mServiceFeatureTable = getServiceFeatureTable(layerDTGS,Constant.NAME_DIEMDANHGIANUOC);
+        this.mServiceFeatureTable = getServiceFeatureTable(layerDTGS,mainActivity.getResources().getString(R.string.name_diemdanhgianuoc));
         this.mCallout = callout;
-        thoiGianChatLuongNuocDB = new ThoiGianChatLuongNuocDB();
-        this.table_thoigiancln = getServiceFeatureTable(layerDTGS,Constant.NAME_HOSOTHOIGIANCHATLUONGNUOC);
-        this.featureLayerDTG_thoigiancln = getFeatureLayerDTG(layerDTGS,Constant.NAME_HOSOTHOIGIANCHATLUONGNUOC);
+        this.table_thoigiancln = getServiceFeatureTable(layerDTGS,mainActivity.getResources().getString(R.string.name_maudanhgia));
+        this.featureLayerDTG_thoigiancln = getFeatureLayerDTG(layerDTGS,mainActivity.getResources().getString(R.string.name_maudanhgia));
         this.editingTGChatLuongNuoc = new EditingTGChatLuongNuoc(mainActivity,featureLayerDTG_thoigiancln);
 
     }
@@ -117,7 +108,7 @@ public class Popup extends AppCompatActivity implements View.OnClickListener {
                     if (value != null)
                         ((TextView) linearLayout.findViewById(R.id.txt_id_su_co)).setText(value.toString());
                     break;
-                case Constant.VI_TRI:
+                case Constant.DIACHI:
                     if (value != null)
                         ((TextView) linearLayout.findViewById(R.id.txt_vi_tri_su_co)).setText(value.toString());
                     break;
@@ -139,7 +130,6 @@ public class Popup extends AppCompatActivity implements View.OnClickListener {
             @Override
             public void onClick(View v) {
                 editingTGChatLuongNuoc.showThoiGianChatLuongNuoc(mSelectedArcGISFeature);
-//                showThoiGianChatLuongNuoc();
             }
         });
         ((ImageButton) linearLayout.findViewById(R.id.imgBtn_ViewMoreInfo)).setOnClickListener(new View.OnClickListener() {
@@ -160,111 +150,8 @@ public class Popup extends AppCompatActivity implements View.OnClickListener {
         return linearLayout;
     }
 
-    /**
-     * Hiển thị bảng thời gian về thu thập chất lượng nước
-     */
-    private void showThoiGianChatLuongNuoc() {
-        final Map<String, Object> attributes = mSelectedArcGISFeature.getAttributes();
-        final String idDiemDanhGia = attributes.get("IDDiemDanhGia").toString();
-        if (idDiemDanhGia != null) {
-            final AlertDialog.Builder builder = new AlertDialog.Builder(mainActivity, android.R.style.Theme_Holo_Light_NoActionBar_Fullscreen);
-            builder.setPositiveButton("Thoát", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    dialog.dismiss();
-                }
-            });
-            final View layout_timetable_chatluongnuoc = mainActivity.getLayoutInflater().inflate(R.layout.layout_title_listview_button, null);
-            ListView listView = (ListView) layout_timetable_chatluongnuoc.findViewById(R.id.listview);
-            ((TextView) layout_timetable_chatluongnuoc.findViewById(R.id.txtTitlePopup)).setText("Thời gian trồng trọt");
-            Button btnAdd = (Button) layout_timetable_chatluongnuoc.findViewById(R.id.btnAdd);
-            btnAdd.setText("Thêm dữ liệu");
-            btnAdd.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (attributes.get("DienTich") != null)
-                        addThoiGianChatLuongNuoc(idDiemDanhGia, attributes.get("DienTich").toString());
-                    else addThoiGianChatLuongNuoc(idDiemDanhGia, null);
-                }
-            });
-            listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                @Override
-                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                    final ThoiGianChatLuongNuoc itemAtPosition = (ThoiGianChatLuongNuoc) parent.getItemAtPosition(position);
-                    HashMap<String, String> attributes = itemAtPosition.getString_attributes();
 
-                    View layout_chitiet_chatluongnuoc = mainActivity.getLayoutInflater().inflate(R.layout.layout_title_listview, null);
-                    ListView listView = (ListView) layout_chitiet_chatluongnuoc.findViewById(R.id.listview);
-                    List<ChiTietCLNAdapter.Item> items = new ArrayList<>();
 
-                    List<Field> fields = table_thoigiancln.getFields();
-                    for (Field field : fields) {
-                        ChiTietCLNAdapter.Item item = new ChiTietCLNAdapter.Item();
-                        item.setAlias(field.getAlias());
-                        Object value = attributes.get(field.getName());
-                        if (value != null) {
-                            if (field.getDomain() != null) {
-                                List<CodedValue> codedValues = ((CodedValueDomain) field.getDomain()).getCodedValues();
-                                String valueDomain = getValueDomain(codedValues, value.toString()).toString();
-                                if (valueDomain != null) item.setValue(valueDomain);
-                            } else switch (field.getFieldType()) {
-                                case DATE:
-//                                    item.setValue(Constant.DATE_FORMAT.format(((Calendar) value).getTime()));
-                                    break;
-                                default:
-                                    item.setValue(attributes.get(field.getName()));
-                            }
-                        }
-                        items.add(item);
-                    }
-                    ChiTietCLNAdapter chiTietCLNAdapter = new ChiTietCLNAdapter(mainActivity, items);
-                    if (items != null) listView.setAdapter(chiTietCLNAdapter);
-                    AlertDialog.Builder builder = new AlertDialog.Builder(mainActivity, android.R.style.Theme_Holo_Light_NoActionBar_Fullscreen);
-                    builder.setView(layout_chitiet_chatluongnuoc);
-                    AlertDialog dialog = builder.create();
-                    dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-                    dialog.show();
-                }
-            });
-            List<ThoiGianChatLuongNuoc> items = new ArrayList<>();
-//                    thoiGianChatLuongNuocDB.getTable_ThoiGianChatLuongNuoc(idDiemDanhGia);
-            ThoiGianCLNAdapter thoiTgTrongTrotAdapter = new ThoiGianCLNAdapter(mainActivity, items);
-
-            if (items != null) listView.setAdapter(thoiTgTrongTrotAdapter);
-            builder.setView(layout_timetable_chatluongnuoc);
-            AlertDialog dialog = builder.create();
-            dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-            dialog.show();
-        }
-    }
-
-    /**
-     * Thêm dữ liệu về thu thập chất kết quả lượng nước
-     */
-    private void addThoiGianChatLuongNuoc(final String idDiemDanhGia, final String dientich) {
-        final AlertDialog.Builder builder = new AlertDialog.Builder(mainActivity, android.R.style.Theme_Holo_Light_NoActionBar_Fullscreen);
-        View layout = mainActivity.getLayoutInflater().inflate(R.layout.layout_add_thoigianchatluongnuoc, null);
-        final AlertDialog dialog = builder.create();
-        dialog.setView(layout);
-        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        dialog.show();
-        layout.findViewById(R.id.btnAdd).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ThoiGianChatLuongNuoc addthoiGianSanXuatTrongTrot = new ThoiGianChatLuongNuoc();
-                addthoiGianSanXuatTrongTrot.setIdDiemDanhGia(idDiemDanhGia);
-                addthoiGianSanXuatTrongTrot.setDienTich(dientich);
-                addthoiGianSanXuatTrongTrot.setNgayCapNhat("GETDATE()");
-                addthoiGianSanXuatTrongTrot.setMauNuoc("1");
-                addthoiGianSanXuatTrongTrot.setMuiNuoc("1");
-                addthoiGianSanXuatTrongTrot.setTinhTrangNuoc("1");
-                boolean b = thoiGianChatLuongNuocDB.insertThoiGianChatLuongNuoc(addthoiGianSanXuatTrongTrot);
-                if (b)
-                    Toast.makeText(mainActivity.getApplicationContext(), "Thêm thành công dữ liệu", Toast.LENGTH_SHORT).show();
-                dialog.dismiss();
-            }
-        });
-    }
 
     private void viewMoreInfo() {
         Map<String, Object> attr = mSelectedArcGISFeature.getAttributes();

@@ -24,8 +24,18 @@
 
     <string name="path_saveImage">.qlsc</string>
     <string name="attachment">attachment</string>
+    <!--Declare value config begin-->
+    <!--Url-->
     <string name="url_service_diemdanhgianuoc">http://113.161.88.180:800/arcgis/rest/services/TanHoa/ChatLuongNuoc/FeatureServer/0</string>
-    <string name="url_service_thoigianchatluongnuoc">http://113.161.88.180:800/arcgis/rest/services/TanHoa/ChatLuongNuoc/FeatureServer/1</string>
+    <string name="url_service_maudanhgia">http://113.161.88.180:800/arcgis/rest/services/TanHoa/ChatLuongNuoc/FeatureServer/1</string>
+    <!--Alias-->
+    <string name="alias_diemdanhgianuoc">Điểm đánh giá nước</string>
+    <string name="alias_maudanhgia">Mẫu đánh giá</string>
+    <!--Name-->
+    <string name="name_diemdanhgianuoc">DiemDanhGia</string>
+    <string name="name_maudanhgia">HoSo_MauDanhGia</string>
+    <!--Declare value config end-->
+
 
     <string name="tongloaitrangthai">tongloaitrangthai</string>
     <string name="title_activity_tra_cuu">TraCuuActivity</string>

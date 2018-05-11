@@ -9,18 +9,13 @@ import com.esri.arcgisruntime.mapping.view.MapView;
  */
 
 public class FeatureLayerDTG {
-
-
     private FeatureLayer featureLayer;
-
-
-    private MapView mMapView;
-
-
-    private String[] outFields;
-    private String[] queryFields;
+    private String[] addFields;
     private String[] updateFields;
+    private String[] queryFields;
+    private String[] outFields;
     private String titleLayer;
+    private boolean isShowOnMap;
 
     public String[] getUpdateFields() {
         return updateFields;
@@ -30,20 +25,31 @@ public class FeatureLayerDTG {
         this.updateFields = updateFields;
     }
 
-    public FeatureLayerDTG(MapView mMapView, FeatureLayer featureLayer, String[] outFields) {
-        this.mMapView = mMapView;
+    public FeatureLayerDTG(FeatureLayer featureLayer, String titleLayer, boolean isShowOnMap) {
         this.featureLayer = featureLayer;
-        this.outFields = outFields;
+        this.titleLayer = titleLayer;
+        this.isShowOnMap = isShowOnMap;
     }
 
-    public FeatureLayerDTG(FeatureLayer featureLayer) {
-        this.featureLayer = featureLayer;
+    public boolean isShowOnMap() {
+        return isShowOnMap;
+    }
+
+    public void setShowOnMap(boolean showOnMap) {
+        isShowOnMap = showOnMap;
     }
 
     public FeatureLayer getFeatureLayer() {
         return featureLayer;
     }
 
+    public String[] getAddFields() {
+        return addFields;
+    }
+
+    public void setAddFields(String[] addFields) {
+        this.addFields = addFields;
+    }
 
     public String[] getOutFields() {
         return outFields;

@@ -16,28 +16,120 @@
         <item>Đang sửa chữa</item>
         <item>Đã sửa chữa</item>
     </string-array>
-    <string-array name="update_fields_arrays">
-        <item>NgayKhacPhuc</item>
-        <item>NgaySuaChua</item>
-        <item>NguyenNhan</item>
-        <item>NguoiSuaChua</item>
-        <item>GhiChuVatTu</item>
-        <item>ViTri</item>
-        <item>GhiChu</item>
+
+    <!--diemdanhgianuoc-->
+    <string-array name="addFields_diemdanhgianuoc">
+        <item>TenKhachHang</item>
+        <item>SoLuongMau</item>
+        <item>DiaChi</item>
         <item>NgayCapNhat</item>
-        <item>PhanLoaiSuCo</item>
-        <item>DonViSuaChua</item>
-        <item>DuongKinhOng</item>
-        <item>HinhThucPhatHien</item>
-        <item>VatLieu</item>
-        <item>SoNha</item>
-        <item>TrangThai</item>
-        <item>NGUOICAPNHAT</item>
-        <item>KetQuaKiemTra</item>
-        <item>ApLuc</item>
-        <item>THOIGIANTHUCHIEN</item>
-        <item>CONGNHANTHUCHIEN</item>
-        <item>VatLieuOng</item>
-        <item>LoaiSuCo</item>
+        <item>GhiChu</item>
+        <item>LoaiNuoc</item>
+    </string-array>
+
+    <string-array name="updateFields_diemdanhgianuoc">
+        <item>TenKhachHang</item>
+        <item>SoLuongMau</item>
+        <item>DiaChi</item>
+        <item>NgayCapNhat</item>
+        <item>GhiChu</item>
+        <item>LoaiNuoc</item>
+    </string-array>
+    <string-array name="queryFields_diemdanhgianuoc">
+        <item>IDDiemDanhGia</item>
+        <item>TenKhachHang</item>
+        <item>SoLuongMau</item>
+        <item>DiaChi</item>
+        <item>NgayCapNhat</item>
+        <item>GhiChu</item>
+        <item>LoaiNuoc</item>
+    </string-array>
+    <string-array name="outFields_diemdanhgianuoc">
+        <item>IDDiemDanhGia</item>
+        <item>TenKhachHang</item>
+        <item>SoLuongMau</item>
+        <item>DiaChi</item>
+        <item>NgayCapNhat</item>
+        <item>GhiChu</item>
+        <item>LoaiNuoc</item>
+    </string-array>
+    <!--diemdanhgianuoc-->
+    <string-array name="addFields_maudanhgia">
+        <item>IDDiemDanhGia</item>
+        <item>IDMauKiemNghiem</item>
+        <item>TenMau</item>
+        <item>TinhTrangMau</item>
+        <item>NgayNhanMau</item>
+        <item>ThoiGianThuNghiem</item>
+        <item>NguoiLayMau</item>
+        <item>DoDuc</item>
+        <item>PH</item>
+        <item>CloDu</item>
+        <item>NgayCapNhat</item>
+        <item>GhiChu</item>
+    </string-array>
+
+    <string-array name="updateFields_maudanhgia">
+        <item>TenMau</item>
+        <item>TinhTrangMau</item>
+        <item>NgayNhanMau</item>
+        <item>ThoiGianThuNghiem</item>
+        <item>NguoiLayMau</item>
+        <item>DoDuc</item>
+        <item>PH</item>
+        <item>CloDu</item>
+        <item>GhiChu</item>
+    </string-array>
+    <string-array name="queryFields_maudanhgia">
+        <item>IDDiemDanhGia</item>
+        <item>IDMauKiemNghiem</item>
+        <item>TenMau</item>
+        <item>TinhTrangMau</item>
+        <item>NgayNhanMau</item>
+        <item>ThoiGianThuNghiem</item>
+        <item>NguoiLayMau</item>
+        <item>DoMau</item>
+        <item>Mui</item>
+        <item>DoDuc</item>
+        <item>PH</item>
+        <item>DoCung</item>
+        <item>Clorua</item>
+        <item>Sat</item>
+        <item>Mangan</item>
+        <item>Nitrat</item>
+        <item>Nitrit</item>
+        <item>Sunphat</item>
+        <item>ChiSoPecmanganate</item>
+        <item>Cloliform</item>
+        <item>E_Coli</item>
+        <item>CloDu</item>
+        <item>NgayCapNhat</item>
+        <item>GhiChu</item>
+    </string-array>
+    <string-array name="outFields_maudanhgia">
+        <item>IDDiemDanhGia</item>
+        <item>IDMauKiemNghiem</item>
+        <item>TenMau</item>
+        <item>TinhTrangMau</item>
+        <item>NgayNhanMau</item>
+        <item>ThoiGianThuNghiem</item>
+        <item>NguoiLayMau</item>
+        <item>DoMau</item>
+        <item>Mui</item>
+        <item>DoDuc</item>
+        <item>PH</item>
+        <item>DoCung</item>
+        <item>Clorua</item>
+        <item>Sat</item>
+        <item>Mangan</item>
+        <item>Nitrat</item>
+        <item>Nitrit</item>
+        <item>Sunphat</item>
+        <item>ChiSoPecmanganate</item>
+        <item>Cloliform</item>
+        <item>E_Coli</item>
+        <item>CloDu</item>
+        <item>NgayCapNhat</item>
+        <item>GhiChu</item>
     </string-array>
 </resources>
