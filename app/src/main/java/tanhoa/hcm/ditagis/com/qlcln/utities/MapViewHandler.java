@@ -150,7 +150,7 @@ public class MapViewHandler extends Activity {
     }
 
     private String getTimeID() {
-        String timeStamp = Constant.DATE_FORMAT.format(Calendar.getInstance().getTime());
+        String timeStamp = Constant.DDMMYYYY.format(Calendar.getInstance().getTime());
         return timeStamp;
     }
 
@@ -411,20 +411,23 @@ public class MapViewHandler extends Activity {
 
         private void addFeatureAsync(ListenableFuture<FeatureQueryResult> featureQuery, Feature feature, String finalTimeID, String finalDateTime) {
             try {
-                // lấy id lớn nhất
+                // lấy stt_id lớn nhất
                 int id_tmp;
-                int id = 0;
+                int stt_id = 0;
                 FeatureQueryResult result = featureQuery.get();
                 Iterator iterator = result.iterator();
                 while (iterator.hasNext()) {
                     Feature item = (Feature) iterator.next();
                     id_tmp = Integer.parseInt(item.getAttributes().get(Constant.IDDIEM_DANH_GIA).toString().split("_")[0]);
-                    if (id_tmp > id) id = id_tmp;
+                    if (id_tmp > stt_id) stt_id = id_tmp;
                 }
-                id++;
-                feature.getAttributes().put(Constant.IDDIEM_DANH_GIA, id + "_" + finalTimeID);
+                stt_id++;
+                if(stt_id < 10){
+                    feature.getAttributes().put(Constant.IDDIEM_DANH_GIA, "0" + stt_id + "_" + finalTimeID);
+                }
+                else feature.getAttributes().put(Constant.IDDIEM_DANH_GIA, stt_id + "_" + finalTimeID);
+
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                    Date date = Constant.DATE_FORMAT.parse(finalDateTime);
                     Calendar c = Calendar.getInstance();
                     feature.getAttributes().put(Constant.NGAY_CAP_NHAT, c);
                 }
@@ -465,8 +468,6 @@ public class MapViewHandler extends Activity {
                 e.printStackTrace();
             } catch (ExecutionException e) {
                 e.printStackTrace();
-            } catch (ParseException e1) {
-                e1.printStackTrace();
             }
         }
 

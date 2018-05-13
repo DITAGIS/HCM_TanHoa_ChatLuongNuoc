@@ -7,10 +7,12 @@
     <string name="app_name">QL chất lượng nước Tân Hòa</string>
     <string name="dialog_title_add">Thêm sự cố</string>
     <string name="btn_OK">OK</string>
-    <string name="btn_save">Lưu thay đổi</string>
-    <string name="btn_cancel">Hủy</string>
-    <string name="quit">THOÁT</string>
+    <string name="btn_Accept">Cập nhật</string>
+    <string name="btn_Delete">Xóa</string>
+    <string name="btn_Cancel">Hủy</string>
+    <string name="btn_Esc">THOÁT</string>
     <string name="title_layer">Điểm đánh giá nước</string>
+    <string name="title_add">Thêm</string>
     <string name="people_info_title">Thông tin liên hệ</string>
     <string name="hoten_field">Họ và tên</string>
     <string name="sdt_field">Số điện thoại</string>
@@ -36,7 +38,18 @@
     <string name="name_maudanhgia">HoSo_MauDanhGia</string>
     <!--Declare value config end-->
 
+    <!--Attribute begin-->
+    <string name="OBJECTID">OBJECTID</string>
+    <string name="IDDIEMDANHGIA">IDDiemDanhGia</string>
+    <string name="NGAY_CAP_NHAT">NgayCapNhat</string>
+    <!--Attribute end-->
+    <!--Attribute MauKiemNghiem Begin-->TenMau
+    <string name="IDMAUKIEMNGHIEM">IDMauKiemNghiem</string>
+    <string name="TENMAU">TenMau</string>
+    <!--Attribute MauKiemNghiem End-->
 
+
+    <string name="title_danhsachmaudanhgia">Danh sách mẫu đánh giá</string>
     <string name="tongloaitrangthai">tongloaitrangthai</string>
     <string name="title_activity_tra_cuu">TraCuuActivity</string>
     <string name="ket_qua_objectid">ket_qua_objectid</string>
@@ -74,6 +87,16 @@
 
     <string name="format_day_yearfirst">yyyy-MM-dd HH:mm:ss</string>
     <string name="format_time_day_month_year">dd/MM/yyyy</string>
+
+
+    <!--display process status -->
+    <string name="DATA_SUCCESSFULLY_INSERTED">Thêm dữ liệu thành công</string>
+    <string name="FAILED_TO_INSERT_DATA">Thêm dữ liệu không thành công</string>
+    <string name="DATA_SUCCESSFULLY_DELETED">Xóa dữ liệu thành công </string>
+    <string name="FAILED_TO_DELETE_DATA">Xóa dữ liệu không thành công</string>
+    <string name="DATA_SUCCESSFULLY_UPDATED">Cập nhật dữ liệu thành công </string>
+    <string name="FAILED_TO_UPDATE_DATA">Cập nhật dữ liệu không thành công</string>
+    <string name="INCORRECT_INPUT_FORMAT">Số liệu nhập vào không đúng định dạng!!!</string>
 
 
 </resources>

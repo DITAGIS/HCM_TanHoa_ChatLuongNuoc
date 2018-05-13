@@ -10,10 +10,12 @@ import tanhoa.hcm.ditagis.com.qlcln.adapter.SettingsAdapter;
 
 public class Constant {
     public static final SimpleDateFormat DATE_TIME_FORMAT = new SimpleDateFormat("dd-MM-yyyy HH:mm:SS");
-    public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd_MM_yyyy");
+    public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy");
+    public static final SimpleDateFormat DDMMYYYY = new SimpleDateFormat("ddMMyyyy");
     private SettingsAdapter.Item[] mSettingsItems;
     public static final String OBJECTID = "OBJECTID";
     public static final String IDDIEM_DANH_GIA = "IDDiemDanhGia";
+    public static final String IDMAUKIEMNGHIEM = "IDMauKiemNghiem";
     public static final String DIACHI = "DiaChi";
     public static final String DIENTICH = "DienTich";
     public static final String NGAY_CAP_NHAT = "NgayCapNhat";

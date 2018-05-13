@@ -68,7 +68,7 @@ public class SettingsActivity extends AppCompatActivity {
         final AlertDialog.Builder builder = new AlertDialog.Builder(this, android.R.style.Theme_Material_Light_Dialog_Alert);
         builder.setCancelable(true);
         builder.setTitle(getString(R.string.nav_cai_dat_them_su_co_title));
-        builder.setPositiveButton(getString(R.string.quit), new DialogInterface.OnClickListener() {
+        builder.setPositiveButton(getString(R.string.btn_Esc), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 dialog.dismiss();
@@ -122,7 +122,7 @@ public class SettingsActivity extends AppCompatActivity {
         final AlertDialog.Builder builder = new AlertDialog.Builder(this, android.R.style.Theme_Material_Light_Dialog_Alert);
         builder.setCancelable(true);
         builder.setTitle(getString(R.string.nav_cai_dat_tim_kiem_title));
-        builder.setPositiveButton(getString(R.string.quit), new DialogInterface.OnClickListener() {
+        builder.setPositiveButton(getString(R.string.btn_Esc), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 dialog.dismiss();

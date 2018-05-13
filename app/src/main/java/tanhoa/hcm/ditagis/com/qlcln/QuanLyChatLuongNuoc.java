@@ -376,8 +376,8 @@ public class QuanLyChatLuongNuoc extends AppCompatActivity implements Navigation
             final Intent intent = new Intent(this, ThongKeActivity.class);
             this.startActivity(intent);
         } else if (id == R.id.nav_tracuu) {
-//            final Intent intent = new Intent(this, TraCuuActivity.class);
-//            this.startActivityForResult(intent, 1);
+            final Intent intent = new Intent(this, TraCuuActivity.class);
+            this.startActivityForResult(intent, 1);
         } else if (id == R.id.nav_setting) {
             final Intent intent = new Intent(this, SettingsActivity.class);
             this.startActivityForResult(intent, 1);

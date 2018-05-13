@@ -6,7 +6,7 @@ import java.util.Map;
 /**
  * @author fuhi
  */
-public class ThoiGianChatLuongNuoc {
+public class MauKiemNghiem {
     private HashMap<String, String> string_attributes;
     private Map<String, Object> object_attributes;
     private String objectID;
@@ -17,7 +17,7 @@ public class ThoiGianChatLuongNuoc {
     private String mauNuoc;
     private String ngayCapNhat;
 
-    public ThoiGianChatLuongNuoc() {
+    public MauKiemNghiem() {
     }
 
     public HashMap<String, String> getString_attributes() {
