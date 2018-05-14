@@ -73,6 +73,7 @@ import java.util.List;
 
 import tanhoa.hcm.ditagis.com.qlcln.adapter.TraCuuAdapter;
 import tanhoa.hcm.ditagis.com.qlcln.libs.FeatureLayerDTG;
+import tanhoa.hcm.ditagis.com.qlcln.tools.TraCuu;
 import tanhoa.hcm.ditagis.com.qlcln.utities.Config;
 import tanhoa.hcm.ditagis.com.qlcln.utities.Constant;
 import tanhoa.hcm.ditagis.com.qlcln.utities.ImageFile;
@@ -95,6 +96,7 @@ public class QuanLyChatLuongNuoc extends AppCompatActivity implements Navigation
     private SearchView mTxtSearch;
     private ListView mListViewSearch;
     private TraCuuAdapter mSearchAdapter;
+    private TraCuu traCuu;
 
     private LocationDisplay mLocationDisplay;
     private int requestCode = 2;
@@ -126,6 +128,7 @@ public class QuanLyChatLuongNuoc extends AppCompatActivity implements Navigation
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 mMapViewHandler.queryByObjectID(((TraCuuAdapter.Item) parent.getItemAtPosition(position)).getObjectID());
+
                 mSearchAdapter.clear();
                 mSearchAdapter.notifyDataSetChanged();
             }
@@ -163,6 +166,7 @@ public class QuanLyChatLuongNuoc extends AppCompatActivity implements Navigation
             if(config.getName() != null && config.getName().equals(getString(R.string.name_diemdanhgianuoc))){
                 featureLayer.setPopupEnabled(true);
                 mMapViewHandler = new MapViewHandler(featureLayerDTG, mCallout, mMapView, QuanLyChatLuongNuoc.this);
+                traCuu = new TraCuu(serviceFeatureTable,QuanLyChatLuongNuoc.this);
             }
             mFeatureLayerDTGS.add(featureLayerDTG);
             mMap.getOperationalLayers().add(featureLayer);
@@ -376,8 +380,9 @@ public class QuanLyChatLuongNuoc extends AppCompatActivity implements Navigation
             final Intent intent = new Intent(this, ThongKeActivity.class);
             this.startActivity(intent);
         } else if (id == R.id.nav_tracuu) {
-            final Intent intent = new Intent(this, TraCuuActivity.class);
-            this.startActivityForResult(intent, 1);
+//            final Intent intent = new Intent(this, TraCuuActivity.class);
+//            this.startActivityForResult(intent, 1);
+            traCuu.start();
         } else if (id == R.id.nav_setting) {
             final Intent intent = new Intent(this, SettingsActivity.class);
             this.startActivityForResult(intent, 1);
