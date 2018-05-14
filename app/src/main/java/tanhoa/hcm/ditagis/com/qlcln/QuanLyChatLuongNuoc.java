@@ -71,7 +71,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import tanhoa.hcm.ditagis.com.qlcln.adapter.TraCuuAdapter;
+import tanhoa.hcm.ditagis.com.qlcln.adapter.DanhSachDiemDanhGiaAdapter;
 import tanhoa.hcm.ditagis.com.qlcln.libs.FeatureLayerDTG;
 import tanhoa.hcm.ditagis.com.qlcln.tools.TraCuu;
 import tanhoa.hcm.ditagis.com.qlcln.utities.Config;
@@ -95,7 +95,7 @@ public class QuanLyChatLuongNuoc extends AppCompatActivity implements Navigation
     private static int LEVEL_OF_DETAIL = 12;
     private SearchView mTxtSearch;
     private ListView mListViewSearch;
-    private TraCuuAdapter mSearchAdapter;
+    private DanhSachDiemDanhGiaAdapter danhSachDiemDanhGiaAdapter;
     private TraCuu traCuu;
 
     private LocationDisplay mLocationDisplay;
@@ -121,16 +121,16 @@ public class QuanLyChatLuongNuoc extends AppCompatActivity implements Navigation
         this.mListViewSearch = findViewById(tanhoa.hcm.ditagis.com.qlcln.R.id.lstview_search);
         //đưa listview search ra phía sau
         this.mListViewSearch.invalidate();
-        List<TraCuuAdapter.Item> items = new ArrayList<>();
-        this.mSearchAdapter = new TraCuuAdapter(QuanLyChatLuongNuoc.this, items);
-        this.mListViewSearch.setAdapter(mSearchAdapter);
+        List<DanhSachDiemDanhGiaAdapter.Item> items = new ArrayList<>();
+        this.danhSachDiemDanhGiaAdapter = new DanhSachDiemDanhGiaAdapter(QuanLyChatLuongNuoc.this, items);
+        this.mListViewSearch.setAdapter(danhSachDiemDanhGiaAdapter);
         this.mListViewSearch.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                mMapViewHandler.queryByObjectID(((TraCuuAdapter.Item) parent.getItemAtPosition(position)).getObjectID());
-
-                mSearchAdapter.clear();
-                mSearchAdapter.notifyDataSetChanged();
+                String objectID = ((DanhSachDiemDanhGiaAdapter.Item) parent.getItemAtPosition(position)).getObjectID();
+                mMapViewHandler.queryByObjectID(objectID);
+                danhSachDiemDanhGiaAdapter.clear();
+                danhSachDiemDanhGiaAdapter.notifyDataSetChanged();
             }
         });
         requestPermisson();
@@ -340,15 +340,15 @@ public class QuanLyChatLuongNuoc extends AppCompatActivity implements Navigation
         mTxtSearch.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-                mMapViewHandler.querySearch(query, mListViewSearch, mSearchAdapter);
+                mMapViewHandler.querySearch(query, mListViewSearch, danhSachDiemDanhGiaAdapter);
                 return false;
             }
 
             @Override
             public boolean onQueryTextChange(String newText) {
                 if (newText.length() == 0) {
-                    mSearchAdapter.clear();
-                    mSearchAdapter.notifyDataSetChanged();
+                    danhSachDiemDanhGiaAdapter.clear();
+                    danhSachDiemDanhGiaAdapter.notifyDataSetChanged();
                 }
                 return false;
             }
@@ -581,7 +581,7 @@ public class QuanLyChatLuongNuoc extends AppCompatActivity implements Navigation
             final int objectid = data.getIntExtra(getString(R.string.ket_qua_objectid), 1);
             if (requestCode == 1) {
                 if (resultCode == Activity.RESULT_OK) {
-                    mMapViewHandler.queryByObjectID(objectid);
+                    mMapViewHandler.queryByObjectID(String.valueOf(objectid));
                 }
             }
         } catch (Exception e) {

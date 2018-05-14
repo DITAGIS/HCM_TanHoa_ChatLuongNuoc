@@ -17,12 +17,12 @@ import java.util.Calendar;
 import java.util.List;
 
 import tanhoa.hcm.ditagis.com.qlcln.R;
-public class ItemTextTextImageAdapter extends ArrayAdapter<ItemTextTextImageAdapter.Item> {
+public class TraCuuChiTietDiemDanhGiaAdapter extends ArrayAdapter<TraCuuChiTietDiemDanhGiaAdapter.Item> {
     private Context context;
-    private List<ItemTextTextImageAdapter.Item> items;
+    private List<TraCuuChiTietDiemDanhGiaAdapter.Item> items;
 
 
-    public ItemTextTextImageAdapter(Context context, List<ItemTextTextImageAdapter.Item> items) {
+    public TraCuuChiTietDiemDanhGiaAdapter(Context context, List<TraCuuChiTietDiemDanhGiaAdapter.Item> items) {
         super(context, 0, items);
         this.context = context;
         this.items = items;

@@ -6,13 +6,13 @@ import android.content.Context;
 import android.os.AsyncTask;
 
 import tanhoa.hcm.ditagis.com.qlcln.R;
-import tanhoa.hcm.ditagis.com.qlcln.adapter.ItemTextTextImageAdapter;
+import tanhoa.hcm.ditagis.com.qlcln.adapter.TraCuuChiTietDiemDanhGiaAdapter;
 
 /**
  * Created by ThanLe on 4/16/2018.
  */
 
-public class NotifyTraCuuAdapterValueChangeAsync extends AsyncTask<ItemTextTextImageAdapter, Void, Void> {
+public class NotifyTraCuuAdapterValueChangeAsync extends AsyncTask<TraCuuChiTietDiemDanhGiaAdapter, Void, Void> {
     private ProgressDialog dialog;
     private Context mContext;
     private Activity mActivity;
@@ -33,8 +33,8 @@ public class NotifyTraCuuAdapterValueChangeAsync extends AsyncTask<ItemTextTextI
     }
 
     @Override
-    protected Void doInBackground(ItemTextTextImageAdapter... params) {
-        final ItemTextTextImageAdapter adapter = params[0];
+    protected Void doInBackground(TraCuuChiTietDiemDanhGiaAdapter... params) {
+        final TraCuuChiTietDiemDanhGiaAdapter adapter = params[0];
         try {
             Thread.sleep(500);
             mActivity.runOnUiThread(new Runnable() {

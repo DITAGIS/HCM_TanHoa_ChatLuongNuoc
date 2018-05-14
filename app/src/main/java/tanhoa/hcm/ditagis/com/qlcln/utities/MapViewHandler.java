@@ -51,7 +51,7 @@ import java.util.TimeZone;
 import java.util.concurrent.ExecutionException;
 
 import tanhoa.hcm.ditagis.com.qlcln.R;
-import tanhoa.hcm.ditagis.com.qlcln.adapter.TraCuuAdapter;
+import tanhoa.hcm.ditagis.com.qlcln.adapter.DanhSachDiemDanhGiaAdapter;
 import tanhoa.hcm.ditagis.com.qlcln.libs.FeatureLayerDTG;
 
 
@@ -154,7 +154,7 @@ public class MapViewHandler extends Activity {
         return timeStamp;
     }
 
-    public void queryByObjectID(int objectID) {
+    public void queryByObjectID(String objectID) {
         final QueryParameters queryParameters = new QueryParameters();
         final String query = "OBJECTID = " + objectID;
         queryParameters.setWhereClause(query);
@@ -181,7 +181,7 @@ public class MapViewHandler extends Activity {
 
     }
 
-    public void querySearch(String searchStr, ListView listView, final TraCuuAdapter adapter) {
+    public void querySearch(String searchStr, ListView listView, final DanhSachDiemDanhGiaAdapter adapter) {
         adapter.clear();
         adapter.notifyDataSetChanged();
         mCallout.dismiss();
@@ -237,13 +237,18 @@ public class MapViewHandler extends Activity {
                         } catch (Exception e) {
 
                         }
-                        String viTri = "";
+                        String diachi = "";
                         try {
-                            viTri = attributes.get(Constant.DIACHI).toString();
+                            diachi = attributes.get(Constant.DIACHI).toString();
                         } catch (Exception e) {
 
                         }
-                        adapter.add(new TraCuuAdapter.Item(Integer.parseInt(attributes.get(Constant.OBJECTID).toString()), attributes.get(Constant.IDDIEM_DANH_GIA).toString(), format_date, viTri));
+                        DanhSachDiemDanhGiaAdapter.Item diemdanhgia = new DanhSachDiemDanhGiaAdapter.Item();
+                        diemdanhgia.setObjectID(attributes.get(Constant.OBJECTID).toString());
+                        diemdanhgia.setiDDiemDanhGia(attributes.get(Constant.IDDIEM_DANH_GIA).toString());
+                        diemdanhgia.setNgayCapNhat(format_date);
+                        diemdanhgia.setDiaChi(diachi);
+                        adapter.add(diemdanhgia);
                         adapter.notifyDataSetChanged();
                     }
                 } catch (InterruptedException e) {
