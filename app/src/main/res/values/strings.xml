@@ -26,7 +26,7 @@
 
     <string name="path_saveImage">.qlsc</string>
     <string name="attachment">attachment</string>
-    <!--Declare value config begin-->
+    <!--DeclngayCapNhatalue config begin-->
     <!--Url-->
     <string name="url_service_diemdanhgianuoc">http://113.161.88.180:800/arcgis/rest/services/TanHoa/ChatLuongNuoc/FeatureServer/0</string>
     <string name="url_service_maudanhgia">http://113.161.88.180:800/arcgis/rest/services/TanHoa/ChatLuongNuoc/FeatureServer/1</string>
@@ -36,20 +36,22 @@
     <!--Name-->
     <string name="name_diemdanhgianuoc">DiemDanhGia</string>
     <string name="name_maudanhgia">HoSo_MauDanhGia</string>
-    <!--Declare value config end-->
+    <!--DeclngayCapNhatalue config end-->
 
     <!--Attribute begin-->
     <string name="OBJECTID">OBJECTID</string>
     <string name="IDDIEMDANHGIA">IDDiemDanhGia</string>
     <string name="NGAY_CAP_NHAT">NgayCapNhat</string>
     <!--Attribute end-->
+    <string name="DIACHI">DiaChi</string>
+
     <!--Attribute MauKiemNghiem Begin-->TenMau
     <string name="IDMAUKIEMNGHIEM">IDMauKiemNghiem</string>
     <string name="TENMAU">TenMau</string>
     <!--Attribute MauKiemNghiem End-->
 
-
-    <string name="title_danhsachmaudanhgia">Danh sách mẫu đánh giá</string>
+    <string name="title_danhsachcacdiemdanhgia">Danh sách các mẫu đánh giá</string>
+    <string name="title_danhsachmaukiemnghiem">Danh sách mẫu kiểm nghiệm</string>
     <string name="tongloaitrangthai">tongloaitrangthai</string>
     <string name="title_activity_tra_cuu">TraCuuActivity</string>
     <string name="ket_qua_objectid">ket_qua_objectid</string>

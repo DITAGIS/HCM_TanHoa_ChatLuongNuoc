@@ -1,13 +1,14 @@
+
 package tanhoa.hcm.ditagis.com.qlcln.adapter;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.View;
 
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.esri.arcgisruntime.data.Field;
@@ -16,24 +17,32 @@ import java.util.Calendar;
 import java.util.List;
 
 import tanhoa.hcm.ditagis.com.qlcln.R;
-
-
-public class ChiTietCLNAdapter extends ArrayAdapter<ChiTietCLNAdapter.Item> {
+public class ItemTextTextImageAdapter extends ArrayAdapter<ItemTextTextImageAdapter.Item> {
     private Context context;
-    private List<ChiTietCLNAdapter.Item> items;
+    private List<ItemTextTextImageAdapter.Item> items;
 
 
-    public ChiTietCLNAdapter(Context context, List<ChiTietCLNAdapter.Item> items) {
+    public ItemTextTextImageAdapter(Context context, List<ItemTextTextImageAdapter.Item> items) {
         super(context, 0, items);
         this.context = context;
         this.items = items;
     }
 
-    public List<ChiTietCLNAdapter.Item> getItems() {
+    @NonNull
+    @Override
+    public Context getContext() {
+        return context;
+    }
+
+    public void setContext(Context context) {
+        this.context = context;
+    }
+
+    public List<Item> getItems() {
         return items;
     }
 
-    public void setItems(List<ChiTietCLNAdapter.Item> items) {
+    public void setItems(List<Item> items) {
         this.items = items;
     }
 
@@ -58,52 +67,36 @@ public class ChiTietCLNAdapter extends ArrayAdapter<ChiTietCLNAdapter.Item> {
             LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             convertView = inflater.inflate(R.layout.item_text_text_image, null);
         }
-        ChiTietCLNAdapter.Item item = items.get(position);
+        Item item = items.get(position);
         TextView textViewItem1 = (TextView) convertView.findViewById(R.id.txtItem1);
         TextView textViewItem2 = (TextView) convertView.findViewById(R.id.txtItem2);
-        ImageView imageView = (ImageView) convertView.findViewById(R.id.img_Item);
         textViewItem1.setText(item.getAlias());
         textViewItem2.setText(item.getValue());
-        if (item.isEdit) {
-            imageView.setVisibility(View.VISIBLE);
-        } else imageView.setVisibility(View.GONE);
-
         return convertView;
     }
 
-
-    public static class Item {
+    public static class Item{
+        private String fieldName;
         private String alias;
         private String value;
-        private boolean isEdit;
-        private String fieldName;
         private Field.Type fieldType;
         private Calendar calendar;
-
-
-        public Item(String alias, String value) {
-            this.alias = alias;
-            this.value = value;
-            this.isEdit = false;
-        }
 
         public Item() {
         }
 
-        public Calendar getCalendar() {
-            return calendar;
+        public Item(String fieldName, String alias, String value) {
+            this.fieldName = fieldName;
+            this.alias = alias;
+            this.value = value;
         }
 
-        public void setCalendar(Calendar calendar) {
-            this.calendar = calendar;
+        public String getFieldName() {
+            return fieldName;
         }
 
-        public boolean isEdit() {
-            return isEdit;
-        }
-
-        public void setEdit(boolean edit) {
-            isEdit = edit;
+        public void setFieldName(String fieldName) {
+            this.fieldName = fieldName;
         }
 
         public String getAlias() {
@@ -122,20 +115,21 @@ public class ChiTietCLNAdapter extends ArrayAdapter<ChiTietCLNAdapter.Item> {
             this.value = value;
         }
 
-        public void setFieldName(String fieldName) {
-            this.fieldName = fieldName;
-        }
-
-        public String getFieldName() {
-            return fieldName;
+        public Field.Type getFieldType() {
+            return fieldType;
         }
 
         public void setFieldType(Field.Type fieldType) {
             this.fieldType = fieldType;
         }
 
-        public Field.Type getFieldType() {
-            return fieldType;
+        public Calendar getCalendar() {
+            return calendar;
+        }
+
+        public void setCalendar(Calendar calendar) {
+            this.calendar = calendar;
         }
     }
+
 }

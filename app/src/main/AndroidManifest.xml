@@ -40,10 +40,6 @@
             android:name=".ThongKeActivity"
             android:label="Thống kê"
             android:parentActivityName=".QuanLyChatLuongNuoc" />
-        <activity
-            android:name=".TraCuuActivity"
-            android:label="Tra cứu thông tin"
-            android:parentActivityName=".QuanLyChatLuongNuoc" />
         <activity android:name=".SettingsActivity"
             android:label="Cài đặt"
             android:parentActivityName=".QuanLyChatLuongNuoc"

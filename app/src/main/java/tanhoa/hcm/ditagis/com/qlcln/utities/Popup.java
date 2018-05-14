@@ -44,7 +44,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
-import tanhoa.hcm.ditagis.com.qlcln.Editing.EditingMauDanhGia;
+import tanhoa.hcm.ditagis.com.qlcln.Editing.EditingMauKiemNghiem;
 import tanhoa.hcm.ditagis.com.qlcln.QuanLyChatLuongNuoc;
 import tanhoa.hcm.ditagis.com.qlcln.R;
 import tanhoa.hcm.ditagis.com.qlcln.adapter.FeatureViewMoreInfoAdapter;
@@ -62,7 +62,7 @@ public class Popup extends AppCompatActivity implements View.OnClickListener {
     private LinearLayout linearLayout;
     private FeatureTable table_thoigiancln;
     private FeatureLayerDTG featureLayerDTG_MauDanhGia;
-    private EditingMauDanhGia editingMauDanhGia;
+    private EditingMauKiemNghiem editingMauKiemNghiem;
     private SimpleDateFormat format_yearfirst = new SimpleDateFormat("yyyy/MM/dd ");
 
     public Popup(QuanLyChatLuongNuoc mainActivity,List<FeatureLayerDTG> layerDTGS, Callout callout) {
@@ -71,7 +71,7 @@ public class Popup extends AppCompatActivity implements View.OnClickListener {
         this.mCallout = callout;
         this.table_thoigiancln = getServiceFeatureTable(layerDTGS,mainActivity.getResources().getString(R.string.name_maudanhgia));
         this.featureLayerDTG_MauDanhGia = getFeatureLayerDTG(layerDTGS,mainActivity.getResources().getString(R.string.name_maudanhgia));
-        this.editingMauDanhGia = new EditingMauDanhGia(mainActivity, featureLayerDTG_MauDanhGia);
+        this.editingMauKiemNghiem = new EditingMauKiemNghiem(mainActivity, featureLayerDTG_MauDanhGia);
 
     }
     public ServiceFeatureTable getServiceFeatureTable(List<FeatureLayerDTG> layerDTGS, String id){
@@ -129,7 +129,7 @@ public class Popup extends AppCompatActivity implements View.OnClickListener {
         ((ImageButton) linearLayout.findViewById(R.id.imgBtn_viewtablethoigian)).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                editingMauDanhGia.showThoiGianChatLuongNuoc(mSelectedArcGISFeature);
+                editingMauKiemNghiem.showThoiGianChatLuongNuoc(mSelectedArcGISFeature);
             }
         });
         ((ImageButton) linearLayout.findViewById(R.id.imgBtn_ViewMoreInfo)).setOnClickListener(new View.OnClickListener() {

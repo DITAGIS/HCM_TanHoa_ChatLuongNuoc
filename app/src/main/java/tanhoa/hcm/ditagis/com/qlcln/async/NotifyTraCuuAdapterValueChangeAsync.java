@@ -6,20 +6,19 @@ import android.content.Context;
 import android.os.AsyncTask;
 
 import tanhoa.hcm.ditagis.com.qlcln.R;
-import tanhoa.hcm.ditagis.com.qlcln.adapter.ChiTietCLNAdapter;
-import tanhoa.hcm.ditagis.com.qlcln.adapter.FeatureViewMoreInfoAdapter;
+import tanhoa.hcm.ditagis.com.qlcln.adapter.ItemTextTextImageAdapter;
 
 /**
  * Created by ThanLe on 4/16/2018.
  */
 
-public class NotifyChiTietCLNAdapterChangeAsync extends AsyncTask<ChiTietCLNAdapter, Void, Void> {
+public class NotifyTraCuuAdapterValueChangeAsync extends AsyncTask<ItemTextTextImageAdapter, Void, Void> {
     private ProgressDialog dialog;
     private Context mContext;
     private Activity mActivity;
 
-    public NotifyChiTietCLNAdapterChangeAsync(Activity activity) {
-        mActivity =activity;
+    public NotifyTraCuuAdapterValueChangeAsync(Activity activity) {
+        mActivity = activity;
         dialog = new ProgressDialog(mActivity, android.R.style.Theme_Material_Dialog_Alert);
     }
 
@@ -34,8 +33,8 @@ public class NotifyChiTietCLNAdapterChangeAsync extends AsyncTask<ChiTietCLNAdap
     }
 
     @Override
-    protected Void doInBackground(ChiTietCLNAdapter... params) {
-        final ChiTietCLNAdapter adapter = params[0];
+    protected Void doInBackground(ItemTextTextImageAdapter... params) {
+        final ItemTextTextImageAdapter adapter = params[0];
         try {
             Thread.sleep(500);
             mActivity.runOnUiThread(new Runnable() {
@@ -62,8 +61,7 @@ public class NotifyChiTietCLNAdapterChangeAsync extends AsyncTask<ChiTietCLNAdap
 
     @Override
     protected void onPostExecute(Void result) {
-        if (dialog != null || dialog.isShowing())
-            dialog.dismiss();
+        if (dialog != null || dialog.isShowing()) dialog.dismiss();
         super.onPostExecute(result);
 
     }

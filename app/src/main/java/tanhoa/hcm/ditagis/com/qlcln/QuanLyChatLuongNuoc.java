@@ -166,13 +166,14 @@ public class QuanLyChatLuongNuoc extends AppCompatActivity implements Navigation
             if(config.getName() != null && config.getName().equals(getString(R.string.name_diemdanhgianuoc))){
                 featureLayer.setPopupEnabled(true);
                 mMapViewHandler = new MapViewHandler(featureLayerDTG, mCallout, mMapView, QuanLyChatLuongNuoc.this);
-                traCuu = new TraCuu(serviceFeatureTable,QuanLyChatLuongNuoc.this);
+                traCuu = new TraCuu(featureLayerDTG,QuanLyChatLuongNuoc.this,mCallout,mMapView);
             }
             mFeatureLayerDTGS.add(featureLayerDTG);
             mMap.getOperationalLayers().add(featureLayer);
         }
         popupInfos = new Popup(QuanLyChatLuongNuoc.this, mFeatureLayerDTGS, mCallout);
         mMapViewHandler.setPopupInfos(popupInfos);
+        traCuu.setPopupInfos(popupInfos);
         mMap.addDoneLoadingListener(new Runnable() {
             @Override
             public void run() {

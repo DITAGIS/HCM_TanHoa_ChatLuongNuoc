@@ -12,37 +12,36 @@ import com.esri.arcgisruntime.data.ServiceFeatureTable;
 
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 import tanhoa.hcm.ditagis.com.qlcln.R;
-import tanhoa.hcm.ditagis.com.qlcln.adapter.MauKiemNghiemApdapter;
-import tanhoa.hcm.ditagis.com.qlcln.entities.MauKiemNghiem;
+import tanhoa.hcm.ditagis.com.qlcln.adapter.DanhSachDiemDanhGiaAdapter;
 import tanhoa.hcm.ditagis.com.qlcln.utities.Constant;
 
 /**
  * Created by ThanLe on 4/16/2018.
  */
 
-public class RefreshTableThoiGianCLNAsync extends AsyncTask<String, List<MauKiemNghiemApdapter.MauKiemNghiem>, Void> {
+public class QueryDiemDanhGiaAsync extends AsyncTask<String, List<DanhSachDiemDanhGiaAdapter.Item>, Void> {
     private ProgressDialog dialog;
     private Context mContext;
-    private ServiceFeatureTable table_thoigiancln;
-    private MauKiemNghiemApdapter mauKiemNghiemApdapter;
+    private ServiceFeatureTable serviceFeatureTable;
+    private DanhSachDiemDanhGiaAdapter danhSachDiemDanhGiaAdapter;
 
     public interface AsyncResponse {
-        void processFinish(List<Feature> features, List<MauKiemNghiemApdapter.MauKiemNghiem> thoiGianChatLuongNuocs);
+        void processFinish(List<Feature> features);
     }
 
     private AsyncResponse delegate = null;
 
-    public RefreshTableThoiGianCLNAsync(Context context, ServiceFeatureTable table_thoigiancln, MauKiemNghiemApdapter mauKiemNghiemApdapter, AsyncResponse asyncResponse) {
+    public QueryDiemDanhGiaAsync(Context context, ServiceFeatureTable serviceFeatureTable, DanhSachDiemDanhGiaAdapter danhSachDiemDanhGiaAdapter, AsyncResponse asyncResponse) {
         this.delegate = asyncResponse;
         mContext = context;
-        this.table_thoigiancln = table_thoigiancln;
-        this.mauKiemNghiemApdapter = mauKiemNghiemApdapter;
+        this.serviceFeatureTable = serviceFeatureTable;
+        this.danhSachDiemDanhGiaAdapter = danhSachDiemDanhGiaAdapter;
         dialog = new ProgressDialog(context, android.R.style.Theme_Material_Dialog_Alert);
     }
 
@@ -57,12 +56,12 @@ public class RefreshTableThoiGianCLNAsync extends AsyncTask<String, List<MauKiem
 
     @Override
     protected Void doInBackground(String... params) {
+        final List<DanhSachDiemDanhGiaAdapter.Item> items = new ArrayList<>();
         final List<Feature> features = new ArrayList<>();
-        final List<MauKiemNghiemApdapter.MauKiemNghiem> mauKiemNghiems = new ArrayList<>();
         QueryParameters queryParameters = new QueryParameters();
-        String queryClause = "IDDiemDanhGia = '" + params[0] + "'";
+        String queryClause = params[0];
         queryParameters.setWhereClause(queryClause);
-        final ListenableFuture<FeatureQueryResult> queryResultListenableFuture = table_thoigiancln.queryFeaturesAsync(queryParameters, ServiceFeatureTable.QueryFeatureFields.LOAD_ALL);
+        final ListenableFuture<FeatureQueryResult> queryResultListenableFuture = serviceFeatureTable.queryFeaturesAsync(queryParameters, ServiceFeatureTable.QueryFeatureFields.LOAD_ALL);
         queryResultListenableFuture.addDoneListener(new Runnable() {
             @Override
             public void run() {
@@ -72,16 +71,18 @@ public class RefreshTableThoiGianCLNAsync extends AsyncTask<String, List<MauKiem
 
                     while (iterator.hasNext()) {
                         Feature feature = (Feature) iterator.next();
+                        DanhSachDiemDanhGiaAdapter.Item item = new DanhSachDiemDanhGiaAdapter.Item();
+                        Map<String, Object> attributes = feature.getAttributes();
+                        item.setObjectID(attributes.get(mContext.getString(R.string.OBJECTID)).toString());
+                        item.setiDDiemDanhGia(attributes.get(mContext.getString(R.string.IDDIEMDANHGIA)).toString());
+                        String format_date = Constant.DATE_FORMAT.format(((Calendar) attributes.get(Constant.NGAY_CAP_NHAT)).getTime());
+                        item.setNgayCapNhat(format_date);
+                        item.setDiaChi(attributes.get(mContext.getString(R.string.DIACHI)).toString());
+                        items.add(item);
                         features.add(feature);
-                        feature.getAttributes().get("OBJECTID");
-                        MauKiemNghiemApdapter.MauKiemNghiem mauKiemNghiem = new MauKiemNghiemApdapter.MauKiemNghiem();
-                        mauKiemNghiem.setOBJECTID(feature.getAttributes().get("OBJECTID").toString());
-                        mauKiemNghiem.setIdMauKiemNghiem(getValueAttributes(feature, mContext.getString(R.string.IDMAUKIEMNGHIEM)));
-                        mauKiemNghiem.setTenMau(getValueAttributes(feature, mContext.getString(R.string.TENMAU)));
-                        mauKiemNghiems.add(mauKiemNghiem);
                     }
-                    delegate.processFinish(features, mauKiemNghiems);
-                    publishProgress(mauKiemNghiems);
+                    delegate.processFinish(features);
+                    publishProgress(items);
 
                 } catch (InterruptedException e) {
                     e.printStackTrace();
@@ -92,27 +93,24 @@ public class RefreshTableThoiGianCLNAsync extends AsyncTask<String, List<MauKiem
         });
         return null;
     }
+    @Override
+    protected void onProgressUpdate(List<DanhSachDiemDanhGiaAdapter.Item>... values) {
+        danhSachDiemDanhGiaAdapter.clear();
+        danhSachDiemDanhGiaAdapter.setItems(values[0]);
+        danhSachDiemDanhGiaAdapter.notifyDataSetChanged();
+        if (dialog != null && dialog.isShowing()) dialog.dismiss();
+        super.onProgressUpdate(values);
 
+    }
     private String getValueAttributes(Feature feature, String fieldName) {
         if (feature.getAttributes().get(fieldName) != null)
             return feature.getAttributes().get(fieldName).toString();
         return null;
     }
 
-
-    @Override
-    protected void onProgressUpdate(List<MauKiemNghiemApdapter.MauKiemNghiem>... values) {
-        mauKiemNghiemApdapter.clear();
-        mauKiemNghiemApdapter.setMauKiemNghiems(values[0]);
-        mauKiemNghiemApdapter.notifyDataSetChanged();
-        if (dialog != null && dialog.isShowing()) dialog.dismiss();
-        super.onProgressUpdate(values);
-
-    }
-
-
     @Override
     protected void onPostExecute(Void result) {
+        if (dialog != null || dialog.isShowing()) dialog.dismiss();
         super.onPostExecute(result);
 
     }

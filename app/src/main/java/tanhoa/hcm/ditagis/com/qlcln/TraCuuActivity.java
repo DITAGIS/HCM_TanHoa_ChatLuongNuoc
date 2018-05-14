@@ -72,7 +72,6 @@ public class TraCuuActivity extends AppCompatActivity {
                 paras.setQuanHuyen(Constant.CODEID_DISTRICT[(int) quan.getSelectedItemId()]);
                 paras.setPhanloaisuco(Constant.CODE_PHANLOAI[(int) loai.getSelectedItemId()]);
                 query(paras);
-
             }
 
 

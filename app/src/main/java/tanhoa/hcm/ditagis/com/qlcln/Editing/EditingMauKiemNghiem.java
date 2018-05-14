@@ -40,10 +40,10 @@ import java.util.concurrent.ExecutionException;
 
 import tanhoa.hcm.ditagis.com.qlcln.QuanLyChatLuongNuoc;
 import tanhoa.hcm.ditagis.com.qlcln.R;
-import tanhoa.hcm.ditagis.com.qlcln.adapter.ChiTietCLNAdapter;
+import tanhoa.hcm.ditagis.com.qlcln.adapter.ChiTietMauKiemNghiemAdapter;
 import tanhoa.hcm.ditagis.com.qlcln.adapter.MauKiemNghiemApdapter;
-import tanhoa.hcm.ditagis.com.qlcln.async.NotifyChiTietCLNAdapterChangeAsync;
-import tanhoa.hcm.ditagis.com.qlcln.async.RefreshTableThoiGianCLNAsync;
+import tanhoa.hcm.ditagis.com.qlcln.async.NotifyChiTietMauKiemNghiemAdapterChangeAsync;
+import tanhoa.hcm.ditagis.com.qlcln.async.RefreshTableMauKiemNghiemAsync;
 import tanhoa.hcm.ditagis.com.qlcln.libs.FeatureLayerDTG;
 import tanhoa.hcm.ditagis.com.qlcln.utities.Constant;
 
@@ -51,7 +51,7 @@ import tanhoa.hcm.ditagis.com.qlcln.utities.Constant;
  * Created by NGUYEN HONG on 5/7/2018.
  */
 
-public class EditingMauDanhGia implements RefreshTableThoiGianCLNAsync.AsyncResponse {
+public class EditingMauKiemNghiem implements RefreshTableMauKiemNghiemAsync.AsyncResponse {
     private QuanLyChatLuongNuoc mainActivity;
     private ServiceFeatureTable table_maudanhgia;
     private FeatureLayerDTG featureLayerDTG_MauDanhGia;
@@ -59,7 +59,7 @@ public class EditingMauDanhGia implements RefreshTableThoiGianCLNAsync.AsyncResp
     private List<Feature> table_feature;
     private String idDiemDanhGia;
 
-    public EditingMauDanhGia(QuanLyChatLuongNuoc mainActivity, FeatureLayerDTG featureLayerDTG_MauDanhGia) {
+    public EditingMauKiemNghiem(QuanLyChatLuongNuoc mainActivity, FeatureLayerDTG featureLayerDTG_MauDanhGia) {
         this.mainActivity = mainActivity;
         this.featureLayerDTG_MauDanhGia = featureLayerDTG_MauDanhGia;
         table_maudanhgia = (ServiceFeatureTable) featureLayerDTG_MauDanhGia.getFeatureLayer().getFeatureTable();
@@ -80,7 +80,7 @@ public class EditingMauDanhGia implements RefreshTableThoiGianCLNAsync.AsyncResp
             final View layout_table_maudanhgia = mainActivity.getLayoutInflater().inflate(R.layout.layout_title_listview_button, null);
             ListView listView = (ListView) layout_table_maudanhgia.findViewById(R.id.listview);
 
-            ((TextView) layout_table_maudanhgia.findViewById(R.id.txtTitlePopup)).setText( mainActivity.getString(R.string.title_danhsachmaudanhgia));
+            ((TextView) layout_table_maudanhgia.findViewById(R.id.txtTitlePopup)).setText( mainActivity.getString(R.string.title_danhsachmaukiemnghiem));
             Button btnAdd = (Button) layout_table_maudanhgia.findViewById(R.id.btnAdd);
             btnAdd.setText("Thêm dữ liệu");
             btnAdd.setOnClickListener(new View.OnClickListener() {
@@ -135,11 +135,11 @@ public class EditingMauDanhGia implements RefreshTableThoiGianCLNAsync.AsyncResp
         View layout_chitiet_maudanhgia = mainActivity.getLayoutInflater().inflate(R.layout.layout_title_listview, null);
         ListView listview_chitiet_maudanhgia = (ListView) layout_chitiet_maudanhgia.findViewById(R.id.listview);
 
-        final List<ChiTietCLNAdapter.Item> items = new ArrayList<>();
+        final List<ChiTietMauKiemNghiemAdapter.Item> items = new ArrayList<>();
         List<Field> fields = table_maudanhgia.getFields();
         final String[] updateFields = featureLayerDTG_MauDanhGia.getUpdateFields();
         for (Field field : fields) {
-            ChiTietCLNAdapter.Item item = new ChiTietCLNAdapter.Item();
+            ChiTietMauKiemNghiemAdapter.Item item = new ChiTietMauKiemNghiemAdapter.Item();
             item.setAlias(field.getAlias());
             item.setFieldName(field.getName());
             item.setFieldType(field.getFieldType());
@@ -165,8 +165,8 @@ public class EditingMauDanhGia implements RefreshTableThoiGianCLNAsync.AsyncResp
             }
             items.add(item);
         }
-        ChiTietCLNAdapter chiTietCLNAdapter = new ChiTietCLNAdapter(mainActivity, items);
-        if (items != null) listview_chitiet_maudanhgia.setAdapter(chiTietCLNAdapter);
+        ChiTietMauKiemNghiemAdapter chiTietMauKiemNghiemAdapter = new ChiTietMauKiemNghiemAdapter(mainActivity, items);
+        if (items != null) listview_chitiet_maudanhgia.setAdapter(chiTietMauKiemNghiemAdapter);
         AlertDialog.Builder builder = new AlertDialog.Builder(mainActivity, android.R.style.Theme_Holo_Light_NoActionBar_Fullscreen);
         builder.setView(layout_chitiet_maudanhgia);
         builder.setPositiveButton(mainActivity.getString(R.string.btn_Accept), null);
@@ -186,7 +186,7 @@ public class EditingMauDanhGia implements RefreshTableThoiGianCLNAsync.AsyncResp
             @Override
             public void onClick(View v) {
                 Feature selectedFeature = getSelectedFeature(items.get(0).getValue());
-                for (ChiTietCLNAdapter.Item item : items) {
+                for (ChiTietMauKiemNghiemAdapter.Item item : items) {
                     Domain domain = table_maudanhgia.getField(item.getFieldName()).getDomain();
                     Object codeDomain = null;
                     if (domain != null) {
@@ -237,7 +237,7 @@ public class EditingMauDanhGia implements RefreshTableThoiGianCLNAsync.AsyncResp
         });
     }
     private void getRefreshTableThoiGianCLNAsync() {
-        new RefreshTableThoiGianCLNAsync(mainActivity, table_maudanhgia, mauKiemNghiemApdapter, new RefreshTableThoiGianCLNAsync.AsyncResponse() {
+        new RefreshTableMauKiemNghiemAsync(mainActivity, table_maudanhgia, mauKiemNghiemApdapter, new RefreshTableMauKiemNghiemAsync.AsyncResponse() {
             @Override
             public void processFinish(List<Feature> features, List<MauKiemNghiemApdapter.MauKiemNghiem> mauKiemNghiems) {
                 table_feature = features;
@@ -279,9 +279,9 @@ public class EditingMauDanhGia implements RefreshTableThoiGianCLNAsync.AsyncResp
         final AlertDialog.Builder builder = new AlertDialog.Builder(mainActivity, android.R.style.Theme_Holo_Light_NoActionBar_Fullscreen);
         View layout_add_maudanhgia = mainActivity.getLayoutInflater().inflate(R.layout.layout_title_listview_button, null);
         ListView listView = (ListView) layout_add_maudanhgia.findViewById(R.id.listview);
-        final List<ChiTietCLNAdapter.Item> items = new ArrayList<>();
-        final ChiTietCLNAdapter chiTietCLNAdapter = new ChiTietCLNAdapter(mainActivity, items);
-        if (items != null) listView.setAdapter(chiTietCLNAdapter);
+        final List<ChiTietMauKiemNghiemAdapter.Item> items = new ArrayList<>();
+        final ChiTietMauKiemNghiemAdapter chiTietMauKiemNghiemAdapter = new ChiTietMauKiemNghiemAdapter(mainActivity, items);
+        if (items != null) listView.setAdapter(chiTietMauKiemNghiemAdapter);
         builder.setView(layout_add_maudanhgia);
         final AlertDialog dialog = builder.create();
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -296,7 +296,7 @@ public class EditingMauDanhGia implements RefreshTableThoiGianCLNAsync.AsyncResp
         String[] updateFields = featureLayerDTG_MauDanhGia.getUpdateFields();
         for (Field field : fields) {
             if (!field.getName().equals(Constant.OBJECTID)) {
-                ChiTietCLNAdapter.Item item = new ChiTietCLNAdapter.Item();
+                ChiTietMauKiemNghiemAdapter.Item item = new ChiTietMauKiemNghiemAdapter.Item();
                 item.setAlias(field.getAlias());
                 item.setFieldName(field.getName());
                 item.setFieldType(field.getFieldType());
@@ -329,7 +329,7 @@ public class EditingMauDanhGia implements RefreshTableThoiGianCLNAsync.AsyncResp
             @Override
             public void onClick(View v) {
                 dialog.dismiss();
-                for (ChiTietCLNAdapter.Item item : items) {
+                for (ChiTietMauKiemNghiemAdapter.Item item : items) {
                     Domain domain = table_maudanhgia.getField(item.getFieldName()).getDomain();
                     Object codeDomain = null;
                     if (domain != null) {
@@ -466,7 +466,7 @@ public class EditingMauDanhGia implements RefreshTableThoiGianCLNAsync.AsyncResp
     }
 
     private void editValueAttribute(final AdapterView<?> parent, View view, int position, final long id) {
-        final ChiTietCLNAdapter.Item item = (ChiTietCLNAdapter.Item) parent.getItemAtPosition(position);
+        final ChiTietMauKiemNghiemAdapter.Item item = (ChiTietMauKiemNghiemAdapter.Item) parent.getItemAtPosition(position);
         if (item.isEdit()) {
             final Calendar[] calendar = new Calendar[1];
             final AlertDialog.Builder builder = new AlertDialog.Builder(mainActivity, android.R.style.Theme_Material_Light_Dialog_Alert);
@@ -575,8 +575,8 @@ public class EditingMauDanhGia implements RefreshTableThoiGianCLNAsync.AsyncResp
                                 break;
                         }
                     }
-                    ChiTietCLNAdapter adapter = (ChiTietCLNAdapter) parent.getAdapter();
-                    new NotifyChiTietCLNAdapterChangeAsync(mainActivity).execute(adapter);
+                    ChiTietMauKiemNghiemAdapter adapter = (ChiTietMauKiemNghiemAdapter) parent.getAdapter();
+                    new NotifyChiTietMauKiemNghiemAdapterChangeAsync(mainActivity).execute(adapter);
 //                    dialog.dismiss();
                 }
             });
