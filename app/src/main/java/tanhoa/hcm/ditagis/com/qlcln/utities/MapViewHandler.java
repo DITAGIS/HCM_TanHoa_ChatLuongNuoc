@@ -38,10 +38,8 @@ import com.esri.arcgisruntime.mapping.view.MapView;
 import com.esri.arcgisruntime.tasks.geocode.GeocodeResult;
 import com.esri.arcgisruntime.tasks.geocode.LocatorTask;
 
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -67,7 +65,6 @@ public class MapViewHandler extends Activity {
     private final FeatureLayer suCoTanHoaLayer;
     LocatorTask loc = new LocatorTask("http://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer");
     private FeatureLayerDTG mFeatureLayerDTG;
-    private Callout mCallout;
     private android.graphics.Point mClickPoint;
     private ArcGISFeature mSelectedArcGISFeature;
     private MapView mMapView;
@@ -75,11 +72,9 @@ public class MapViewHandler extends Activity {
     private ServiceFeatureTable mServiceFeatureTable;
     private Popup popupInfos;
     private Context mContext;
-    private Uri mUri;
 
-    public MapViewHandler(FeatureLayerDTG featureLayerDTG, Callout mCallout, MapView mMapView, Context mContext) {
+    public MapViewHandler(FeatureLayerDTG featureLayerDTG, MapView mMapView, Context mContext) {
         this.mFeatureLayerDTG = featureLayerDTG;
-        this.mCallout = mCallout;
         this.mMapView = mMapView;
         this.mServiceFeatureTable = (ServiceFeatureTable) featureLayerDTG.getFeatureLayer().getFeatureTable();
         this.mContext = mContext;
@@ -119,10 +114,6 @@ public class MapViewHandler extends Activity {
         if (isClickBtnAdd) {
             mMapView.setViewpointCenterAsync(clickPoint, 10);
         } else {
-            suCoTanHoaLayer.clearSelection();
-            if (mCallout.isShowing()) {
-                mCallout.dismiss();
-            }
             mClickPoint = new android.graphics.Point((int) e.getX(), (int) e.getY());
             mSelectedArcGISFeature = null;
             // get the point that was clicked and convert it to a point in map coordinates
@@ -158,7 +149,7 @@ public class MapViewHandler extends Activity {
         final QueryParameters queryParameters = new QueryParameters();
         final String query = "OBJECTID = " + objectID;
         queryParameters.setWhereClause(query);
-        final ListenableFuture<FeatureQueryResult> feature = mServiceFeatureTable.queryFeaturesAsync(queryParameters);
+        final ListenableFuture<FeatureQueryResult> feature = mServiceFeatureTable.queryFeaturesAsync(queryParameters, ServiceFeatureTable.QueryFeatureFields.LOAD_ALL);
         feature.addDoneListener(new Runnable() {
             @Override
             public void run() {
@@ -166,10 +157,7 @@ public class MapViewHandler extends Activity {
                     FeatureQueryResult result = feature.get();
                     if (result.iterator().hasNext()) {
                         Feature item = result.iterator().next();
-                        Envelope extent = item.getGeometry().getExtent();
-
-                        mMapView.setViewpointGeometryAsync(extent);
-                        suCoTanHoaLayer.selectFeature(item);
+                        showPopup(item);
                     }
                 } catch (InterruptedException e) {
                     e.printStackTrace();
@@ -181,12 +169,16 @@ public class MapViewHandler extends Activity {
 
     }
 
+    private void showPopup(Feature selectedFeature) {
+        if (selectedFeature != null) {
+            popupInfos.setFeatureLayerDTG(mFeatureLayerDTG);
+            popupInfos.showPopup((ArcGISFeature) selectedFeature);
+        }
+    }
+
     public void querySearch(String searchStr, ListView listView, final DanhSachDiemDanhGiaAdapter adapter) {
         adapter.clear();
         adapter.notifyDataSetChanged();
-        mCallout.dismiss();
-
-        suCoTanHoaLayer.clearSelection();
         QueryParameters queryParameters = new QueryParameters();
         StringBuilder builder = new StringBuilder();
         for (Field field : mServiceFeatureTable.getFields()) {
@@ -241,7 +233,6 @@ public class MapViewHandler extends Activity {
                         try {
                             diachi = attributes.get(Constant.DIACHI).toString();
                         } catch (Exception e) {
-
                         }
                         DanhSachDiemDanhGiaAdapter.Item diemdanhgia = new DanhSachDiemDanhGiaAdapter.Item();
                         diemdanhgia.setObjectID(attributes.get(Constant.OBJECTID).toString());
@@ -295,31 +286,11 @@ public class MapViewHandler extends Activity {
                         if (resultGeoElements.size() > 0) {
                             if (resultGeoElements.get(0) instanceof ArcGISFeature) {
                                 mSelectedArcGISFeature = (ArcGISFeature) resultGeoElements.get(0);
-                                // highlight the selected feature
-                                FeatureLayer featureLayer = mFeatureLayerDTG.getFeatureLayer();
-                                featureLayer.clearSelection();
-                                featureLayer.selectFeature(mSelectedArcGISFeature);
-                                popupInfos.setFeatureLayerDTG(mFeatureLayerDTG);
-                                LinearLayout linearLayout = popupInfos.createPopup(mSelectedArcGISFeature);
-                                Envelope envelope = mSelectedArcGISFeature.getGeometry().getExtent();
-                                Envelope envelope1 = new Envelope(new Point(envelope.getXMin(), envelope.getYMin() + DELTA_MOVE_Y), new Point(envelope.getXMax(), envelope.getYMax() + DELTA_MOVE_Y));
-                                mMapView.setViewpointGeometryAsync(envelope1, 0);
-                                // show CallOut
-                                mCallout.setLocation(clickPoint);
-                                mCallout.setContent(linearLayout);
-                                popupInfos.runOnUiThread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        mCallout.refresh();
-                                        mCallout.show();
-                                    }
-                                });
                             }
                         } else {
-                            // none of the features on the map were selected
-                            mCallout.dismiss();
+                            mSelectedArcGISFeature = null;
                         }
-
+                        publishProgress(null);
                     } catch (Exception e) {
                         Log.e(mContext.getResources().getString(R.string.app_name), "Select feature failed: " + e.getMessage());
                     }
@@ -331,7 +302,9 @@ public class MapViewHandler extends Activity {
         @Override
         protected void onProgressUpdate(Void... values) {
             super.onProgressUpdate(values);
-
+            popupInfos.setFeatureLayerDTG(mFeatureLayerDTG);
+            if (mSelectedArcGISFeature != null) popupInfos.showPopup(mSelectedArcGISFeature);
+            else popupInfos.dimissCallout();
         }
 
 
@@ -427,10 +400,10 @@ public class MapViewHandler extends Activity {
                     if (id_tmp > stt_id) stt_id = id_tmp;
                 }
                 stt_id++;
-                if(stt_id < 10){
+                if (stt_id < 10) {
                     feature.getAttributes().put(Constant.IDDIEM_DANH_GIA, "0" + stt_id + "_" + finalTimeID);
-                }
-                else feature.getAttributes().put(Constant.IDDIEM_DANH_GIA, stt_id + "_" + finalTimeID);
+                } else
+                    feature.getAttributes().put(Constant.IDDIEM_DANH_GIA, stt_id + "_" + finalTimeID);
 
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                     Calendar c = Calendar.getInstance();

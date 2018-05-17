@@ -3,6 +3,7 @@ package tanhoa.hcm.ditagis.com.qlcln.async;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.AsyncTask;
+import android.widget.TextView;
 
 import com.esri.arcgisruntime.concurrent.ListenableFuture;
 import com.esri.arcgisruntime.data.Feature;
@@ -17,7 +18,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
+import tanhoa.hcm.ditagis.com.qlcln.QuanLyChatLuongNuoc;
 import tanhoa.hcm.ditagis.com.qlcln.R;
+import tanhoa.hcm.ditagis.com.qlcln.ThongKeActivity;
 import tanhoa.hcm.ditagis.com.qlcln.adapter.DanhSachDiemDanhGiaAdapter;
 import tanhoa.hcm.ditagis.com.qlcln.utities.Constant;
 
@@ -30,6 +33,25 @@ public class QueryDiemDanhGiaAsync extends AsyncTask<String, List<DanhSachDiemDa
     private Context mContext;
     private ServiceFeatureTable serviceFeatureTable;
     private DanhSachDiemDanhGiaAdapter danhSachDiemDanhGiaAdapter;
+    private TextView txtTongItem;
+
+    public QueryDiemDanhGiaAsync(ThongKeActivity thongKeActivity, ServiceFeatureTable serviceFeatureTable, TextView txtTongItem, DanhSachDiemDanhGiaAdapter adapter, AsyncResponse asyncResponse) {
+        this.delegate = asyncResponse;
+        mContext = thongKeActivity;
+        this.serviceFeatureTable = serviceFeatureTable;
+        this.danhSachDiemDanhGiaAdapter = adapter;
+        this.txtTongItem = txtTongItem;
+        dialog = new ProgressDialog(thongKeActivity, android.R.style.Theme_Material_Dialog_Alert);
+    }
+
+    public QueryDiemDanhGiaAsync(QuanLyChatLuongNuoc mainActivity, ServiceFeatureTable serviceFeatureTable, TextView txtTongItem, DanhSachDiemDanhGiaAdapter adapter, AsyncResponse asyncResponse) {
+        this.delegate = asyncResponse;
+        mContext = mainActivity;
+        this.serviceFeatureTable = serviceFeatureTable;
+        this.danhSachDiemDanhGiaAdapter = adapter;
+        this.txtTongItem = txtTongItem;
+        dialog = new ProgressDialog(mainActivity, android.R.style.Theme_Material_Dialog_Alert);
+    }
 
     public interface AsyncResponse {
         void processFinish(List<Feature> features);
@@ -37,13 +59,6 @@ public class QueryDiemDanhGiaAsync extends AsyncTask<String, List<DanhSachDiemDa
 
     private AsyncResponse delegate = null;
 
-    public QueryDiemDanhGiaAsync(Context context, ServiceFeatureTable serviceFeatureTable, DanhSachDiemDanhGiaAdapter danhSachDiemDanhGiaAdapter, AsyncResponse asyncResponse) {
-        this.delegate = asyncResponse;
-        mContext = context;
-        this.serviceFeatureTable = serviceFeatureTable;
-        this.danhSachDiemDanhGiaAdapter = danhSachDiemDanhGiaAdapter;
-        dialog = new ProgressDialog(context, android.R.style.Theme_Material_Dialog_Alert);
-    }
 
     @Override
     protected void onPreExecute() {
@@ -93,15 +108,19 @@ public class QueryDiemDanhGiaAsync extends AsyncTask<String, List<DanhSachDiemDa
         });
         return null;
     }
+
     @Override
     protected void onProgressUpdate(List<DanhSachDiemDanhGiaAdapter.Item>... values) {
         danhSachDiemDanhGiaAdapter.clear();
         danhSachDiemDanhGiaAdapter.setItems(values[0]);
         danhSachDiemDanhGiaAdapter.notifyDataSetChanged();
+        if (txtTongItem != null)
+            txtTongItem.setText(mContext.getString(R.string.nav_thong_ke_tong_diem) + values[0].size());
         if (dialog != null && dialog.isShowing()) dialog.dismiss();
         super.onProgressUpdate(values);
 
     }
+
     private String getValueAttributes(Feature feature, String fieldName) {
         if (feature.getAttributes().get(fieldName) != null)
             return feature.getAttributes().get(fieldName).toString();

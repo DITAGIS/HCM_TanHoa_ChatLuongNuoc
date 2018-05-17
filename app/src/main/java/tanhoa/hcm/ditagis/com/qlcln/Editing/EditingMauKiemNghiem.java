@@ -12,6 +12,7 @@ import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.Spinner;
@@ -71,12 +72,6 @@ public class EditingMauKiemNghiem implements RefreshTableMauKiemNghiemAsync.Asyn
         this.idDiemDanhGia = idDiemDanhGia;
         if (idDiemDanhGia != null) {
             final AlertDialog.Builder builder = new AlertDialog.Builder(mainActivity, android.R.style.Theme_Holo_Light_NoActionBar_Fullscreen);
-            builder.setPositiveButton("Thoát", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    dialog.dismiss();
-                }
-            });
             final View layout_table_maudanhgia = mainActivity.getLayoutInflater().inflate(R.layout.layout_title_listview_button, null);
             ListView listView = (ListView) layout_table_maudanhgia.findViewById(R.id.listview);
 
@@ -483,7 +478,7 @@ public class EditingMauKiemNghiem implements RefreshTableMauKiemNghiemAsync.Asyn
             builder.setView(layout);
             final FrameLayout layoutTextView = layout.findViewById(R.id.layout_edit_viewmoreinfo_TextView);
             final TextView textView = layout.findViewById(R.id.txt_edit_viewmoreinfo);
-            final Button button = layout.findViewById(R.id.btn_edit_viewmoreinfo);
+            ImageView img_selectTime = (ImageView) layout.findViewById(R.id.img_selectTime);
             final LinearLayout layoutEditText = layout.findViewById(R.id.layout_edit_viewmoreinfo_Editext);
             final EditText editText = layout.findViewById(R.id.etxt_edit_viewmoreinfo);
             final LinearLayout layoutSpin = layout.findViewById(R.id.layout_edit_viewmoreinfo_Spinner);
@@ -506,7 +501,7 @@ public class EditingMauKiemNghiem implements RefreshTableMauKiemNghiemAsync.Asyn
                 case DATE:
                     layoutTextView.setVisibility(View.VISIBLE);
                     textView.setText(item.getValue());
-                    button.setOnClickListener(new View.OnClickListener() {
+                    img_selectTime.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
                             final View dialogView = View.inflate(mainActivity, R.layout.date_time_picker, null);
@@ -582,7 +577,7 @@ public class EditingMauKiemNghiem implements RefreshTableMauKiemNghiemAsync.Asyn
             });
             builder.setView(layout);
             AlertDialog dialog = builder.create();
-            dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+//            dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
             dialog.show();
 
         }

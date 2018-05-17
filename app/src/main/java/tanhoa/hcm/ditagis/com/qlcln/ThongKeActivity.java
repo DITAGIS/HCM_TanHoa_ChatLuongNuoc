@@ -1,5 +1,8 @@
 package tanhoa.hcm.ditagis.com.qlcln;
 
+import android.app.Activity;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -14,10 +17,12 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.esri.arcgisruntime.concurrent.ListenableFuture;
+import com.esri.arcgisruntime.data.ArcGISFeature;
 import com.esri.arcgisruntime.data.Feature;
 import com.esri.arcgisruntime.data.FeatureQueryResult;
 import com.esri.arcgisruntime.data.QueryParameters;
 import com.esri.arcgisruntime.data.ServiceFeatureTable;
+import com.esri.arcgisruntime.geometry.Envelope;
 import com.github.mikephil.charting.charts.PieChart;
 import com.github.mikephil.charting.components.Legend;
 import com.github.mikephil.charting.data.Entry;
@@ -35,25 +40,28 @@ import java.util.List;
 import java.util.TimeZone;
 import java.util.concurrent.ExecutionException;
 
+import tanhoa.hcm.ditagis.com.qlcln.adapter.DanhSachDiemDanhGiaAdapter;
 import tanhoa.hcm.ditagis.com.qlcln.adapter.ThongKeAdapter;
+import tanhoa.hcm.ditagis.com.qlcln.async.QueryDiemDanhGiaAsync;
 import tanhoa.hcm.ditagis.com.qlcln.utities.TimePeriodReport;
 
 public class ThongKeActivity extends AppCompatActivity {
-    private TextView txtTongSuCo;
-    private ServiceFeatureTable mServiceFeatureTable;
+    private TextView txtTongItem;
+    private ServiceFeatureTable serviceFeatureTable;
     private ThongKeAdapter thongKeAdapter;
+    private List<Feature> table_feature;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_thong_ke);
-        mServiceFeatureTable = new ServiceFeatureTable(getResources().getString(R.string.url_service_diemdanhgianuoc));
+        serviceFeatureTable = new ServiceFeatureTable(getResources().getString(R.string.url_service_diemdanhgianuoc));
         TimePeriodReport timePeriodReport = new TimePeriodReport(this);
         List<ThongKeAdapter.Item> items = new ArrayList<>();
         items = timePeriodReport.getItems();
         thongKeAdapter = new ThongKeAdapter(this, items);
 
-        this.txtTongSuCo = this.findViewById(R.id.txtTongSuCo);
+        this.txtTongItem = this.findViewById(R.id.txtTongItem);
         ((LinearLayout) ThongKeActivity.this.findViewById(R.id.layout_thongke_thoigian)).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -190,82 +198,45 @@ public class ThongKeActivity extends AppCompatActivity {
             txtThoiGian.setText(item.getThoigianhienthi());
             txtThoiGian.setVisibility(View.VISIBLE);
         }
-        final int[] tongloaitrangthai = {0};// tong, chuasua, dangsua, dasua
         String whereClause = "1 = 1";
         if (item.getThoigianbatdau() == null || item.getThoigianketthuc() == null) {
             whereClause = "1 = 1";
         } else
             whereClause = "NgayCapNhat" + " >= date '" + item.getThoigianbatdau() + "' and " + "NgayCapNhat" + " <= date '" + item.getThoigianketthuc() + "'";
-        QueryParameters queryParameters = new QueryParameters();
-        queryParameters.setWhereClause(whereClause);
-        final ListenableFuture<FeatureQueryResult> feature = mServiceFeatureTable.queryFeaturesAsync(queryParameters);
-        feature.addDoneListener(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    FeatureQueryResult result = feature.get();
-                    Iterator iterator = result.iterator();
-                    while (iterator.hasNext()) {
-                        Feature item = (Feature) iterator.next();
-                        tongloaitrangthai[0] += 1;
-                    }
-                    displayReport(tongloaitrangthai);
+        getQueryDiemDanhGiaAsync(whereClause);
 
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                } catch (ExecutionException e) {
-                    e.printStackTrace();
-                }
+
+    }
+    private void getQueryDiemDanhGiaAsync(String whereClause) {
+        ListView listView = (ListView) findViewById(R.id.listview);
+        final List<DanhSachDiemDanhGiaAdapter.Item> items = new ArrayList<>();
+        final DanhSachDiemDanhGiaAdapter adapter = new DanhSachDiemDanhGiaAdapter(this, items);
+        listView.setAdapter(adapter);
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, final long id) {
+                Intent returnIntent = new Intent();
+                returnIntent.putExtra(getString(R.string.ket_qua_objectid), adapter.getItems().get(position).getObjectID());
+                setResult(Activity.RESULT_OK, returnIntent);
+                finish();
             }
         });
-
-
+        new QueryDiemDanhGiaAsync(this, serviceFeatureTable,txtTongItem, adapter, new QueryDiemDanhGiaAsync.AsyncResponse() {
+            public void processFinish(List<Feature> features) {
+                table_feature = features;
+            }
+        }).execute(whereClause);
+    }
+    private Feature getSelectedFeature(String OBJECTID) {
+        Feature rt_feature = null;
+        for (Feature feature : table_feature) {
+            Object objectID = feature.getAttributes().get(getString(R.string.OBJECTID));
+            if (objectID != null && objectID.toString().equals(OBJECTID)) {
+                rt_feature = feature;
+            }
+        }
+        return rt_feature;
     }
 
-    private void displayReport(int[] tongloaitrangthai) {
-        txtTongSuCo.setText(getString(R.string.nav_thong_ke_tong_diem) + tongloaitrangthai[0]);
-    }
 
-    public PieChart configureChart(PieChart chart) {
-        chart.setHoleColor(getResources().getColor(android.R.color.background_dark));
-        chart.setHoleRadius(60f);
-        chart.setDescription("");
-        chart.setTransparentCircleRadius(5f);
-        chart.setDrawCenterText(true);
-        chart.setDrawHoleEnabled(false);
-        chart.setRotationAngle(0);
-        chart.setRotationEnabled(true);
-
-        chart.setUsePercentValues(false);
-
-        Legend legend = chart.getLegend();
-        legend.setPosition(Legend.LegendPosition.LEFT_OF_CHART);
-        return chart;
-    }
-
-    private PieChart setData(PieChart chart, int[] tongloaitrangthai) {
-        ArrayList<Entry> yVals1 = new ArrayList<Entry>();
-
-        yVals1.add(new Entry(tongloaitrangthai[1], 0));
-        yVals1.add(new Entry(tongloaitrangthai[2], 1));
-        yVals1.add(new Entry(tongloaitrangthai[3], 2));
-        ArrayList<String> xVals = new ArrayList<String>();
-        xVals.add(getString(R.string.nav_thong_ke_chua_sua_chua));
-        xVals.add(getString(R.string.nav_thong_ke_dang_sua_chua));
-        xVals.add(getString(R.string.nav_thong_ke_da_sua_chua));
-        PieDataSet set1 = new PieDataSet(yVals1, "");
-        set1.setSliceSpace(0f);
-        ArrayList<Integer> colors = new ArrayList<Integer>();
-        colors.add(getResources().getColor(android.R.color.holo_red_light));
-        colors.add(getResources().getColor(android.R.color.holo_orange_light));
-        colors.add(getResources().getColor(android.R.color.holo_green_light));
-        set1.setColors(colors);
-        PieData data = new PieData(xVals, set1);
-        data.setValueTextSize(15);
-        set1.setValueTextSize(0);
-        chart.setData(data);
-        chart.highlightValues(null);
-//        chart.invalidate();
-        return chart;
-    }
 }

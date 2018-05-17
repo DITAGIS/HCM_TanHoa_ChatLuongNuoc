@@ -4,6 +4,7 @@ import android.content.DialogInterface;
 import android.support.v7.app.AlertDialog;
 import android.text.InputFilter;
 import android.text.InputType;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
 import android.widget.AdapterView;
@@ -11,7 +12,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
-import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.Spinner;
@@ -25,9 +26,6 @@ import com.esri.arcgisruntime.data.Domain;
 import com.esri.arcgisruntime.data.Feature;
 import com.esri.arcgisruntime.data.Field;
 import com.esri.arcgisruntime.data.ServiceFeatureTable;
-import com.esri.arcgisruntime.geometry.Envelope;
-import com.esri.arcgisruntime.mapping.view.Callout;
-import com.esri.arcgisruntime.mapping.view.MapView;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -56,19 +54,18 @@ public class TraCuu {
     private TraCuuChiTietDiemDanhGiaAdapter traCuuChiTietDiemDanhGiaAdapter;
     private List<Feature> table_feature;
     private Popup popupInfos;
-    private MapView mMapView;
-    private Callout mCallout;
 
-    public TraCuu(FeatureLayerDTG featureLayerDTG, QuanLyChatLuongNuoc mainActivity, Callout mCallout, MapView mMapView) {
+
+    public TraCuu(FeatureLayerDTG featureLayerDTG, QuanLyChatLuongNuoc mainActivity) {
         this.featureLayerDTG = featureLayerDTG;
         serviceFeatureTable = (ServiceFeatureTable) featureLayerDTG.getFeatureLayer().getFeatureTable();
         this.mainActivity = mainActivity;
-        this.mMapView = mMapView;
-        this.mCallout = mCallout;
     }
+
     public void setPopupInfos(Popup popupInfos) {
         this.popupInfos = popupInfos;
     }
+
     public void start() {
         final AlertDialog.Builder builder = new AlertDialog.Builder(mainActivity, android.R.style.Theme_Holo_Light_NoActionBar_Fullscreen);
         final View layout_table_tracuu = mainActivity.getLayoutInflater().inflate(R.layout.layout_title_listview_button, null);
@@ -115,21 +112,24 @@ public class TraCuu {
                 }
                 switch (item.getFieldType()) {
                     case DATE:
-                        if (item.getCalendar() != null) {
-                            SimpleDateFormat dateFormatGmt = new SimpleDateFormat(mainActivity.getString(R.string.format_day_yearfirst));
-                            dateFormatGmt.setTimeZone(TimeZone.getTimeZone("GMT"));
-                            item.getCalendar().set(Calendar.HOUR_OF_DAY, 0); // ! clear would not reset the hour of day !
-                            item.getCalendar().clear(Calendar.MINUTE);
-                            item.getCalendar().clear(Calendar.SECOND);
-                            item.getCalendar().clear(Calendar.MILLISECOND);
-                            String format1 = dateFormatGmt.format(item.getCalendar().getTime());
-                            item.getCalendar().set(Calendar.HOUR_OF_DAY, 23);
-                            item.getCalendar().set(Calendar.MINUTE, 59);
-                            item.getCalendar().set(Calendar.SECOND, 59);
-                            item.getCalendar().set(Calendar.MILLISECOND, 999);
-                            String format2 = dateFormatGmt.format(item.getCalendar().getTime());
-                            whereClause = item.getFieldName() + " >= date '" + format1 + "' and " + item.getFieldName() + " <= date '" + format2 + "'";
+                        SimpleDateFormat dateFormatGmt = new SimpleDateFormat(mainActivity.getString(R.string.format_day_yearfirst));
+                        dateFormatGmt.setTimeZone(TimeZone.getTimeZone("GMT"));
+                        String format1 = null,format2 = null;
+                        if (item.getCalendarBegin() != null) {
+                            item.getCalendarBegin().set(Calendar.HOUR_OF_DAY, 0); // ! clear would not reset the hour of day !
+                            item.getCalendarBegin().clear(Calendar.MINUTE);
+                            item.getCalendarBegin().clear(Calendar.SECOND);
+                            item.getCalendarBegin().clear(Calendar.MILLISECOND);
+                            format1 = dateFormatGmt.format(item.getCalendarBegin().getTime());
                         }
+                        if (item.getCalendarEnd() != null) {
+                            item.getCalendarEnd().set(Calendar.HOUR_OF_DAY, 23);
+                            item.getCalendarEnd().set(Calendar.MINUTE, 59);
+                            item.getCalendarEnd().set(Calendar.SECOND, 59);
+                            item.getCalendarEnd().set(Calendar.MILLISECOND, 999);
+                            format2 = dateFormatGmt.format(item.getCalendarEnd().getTime());
+                        }
+                        whereClause = item.getFieldName() + " >= date '" + format1 + "' and " + item.getFieldName() + " <= date '" + format2 + "'";
                         break;
                     case DOUBLE:
                         if (item.getValue() != null)
@@ -168,15 +168,8 @@ public class TraCuu {
 
     private void getQueryDiemDanhGiaAsync(String whereClause) {
         final AlertDialog.Builder builder = new AlertDialog.Builder(mainActivity, android.R.style.Theme_Holo_Light_NoActionBar_Fullscreen);
-        builder.setPositiveButton("Thoát", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.dismiss();
-            }
-        });
         final View layout_table_tracuu = mainActivity.getLayoutInflater().inflate(R.layout.layout_title_listview, null);
         ListView listView = (ListView) layout_table_tracuu.findViewById(R.id.listview);
-        ((TextView) layout_table_tracuu.findViewById(R.id.txtTitlePopup)).setText(mainActivity.getString(R.string.title_danhsachcacdiemdanhgia));
         final List<DanhSachDiemDanhGiaAdapter.Item> items = new ArrayList<>();
         final DanhSachDiemDanhGiaAdapter adapter = new DanhSachDiemDanhGiaAdapter(mainActivity, items);
         listView.setAdapter(adapter);
@@ -192,31 +185,18 @@ public class TraCuu {
                 Feature selectedFeature = getSelectedFeature(item.getObjectID());
                 if (selectedFeature != null) {
                     dialog.dismiss();
-                    featureLayerDTG.getFeatureLayer().clearSelection();
-                    featureLayerDTG.getFeatureLayer().selectFeature(selectedFeature);
                     popupInfos.setFeatureLayerDTG(featureLayerDTG);
-                    LinearLayout linearLayout = popupInfos.createPopup((ArcGISFeature) selectedFeature);
-                    Envelope envelope = selectedFeature.getGeometry().getExtent();
-                    mMapView.setViewpointGeometryAsync(envelope, 0);
-                    // show CallOut
-                    mCallout.setLocation(envelope.getCenter());
-                    mCallout.setContent(linearLayout);
-                    popupInfos.runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            mCallout.refresh();
-                            mCallout.show();
-                        }
-                    });
+                    popupInfos.showPopup((ArcGISFeature) selectedFeature);
                 }
             }
         });
-
-        new QueryDiemDanhGiaAsync(mainActivity, serviceFeatureTable, adapter, new QueryDiemDanhGiaAsync.AsyncResponse() {
+        TextView txtTongItem = (TextView) layout_table_tracuu.findViewById(R.id.txtTongItem);
+        new QueryDiemDanhGiaAsync(mainActivity, serviceFeatureTable,txtTongItem, adapter, new QueryDiemDanhGiaAsync.AsyncResponse() {
             public void processFinish(List<Feature> features) {
                 table_feature = features;
             }
         }).execute(whereClause);
+
     }
 
     private Feature getSelectedFeature(String OBJECTID) {
@@ -244,22 +224,23 @@ public class TraCuu {
 
     private void editValueAttribute(final AdapterView<?> parent, View view, int position, final long id) {
         final TraCuuChiTietDiemDanhGiaAdapter.Item item = traCuuChiTietDiemDanhGiaAdapter.getItems().get(position);
-        final Calendar[] calendar = new Calendar[1];
-        final AlertDialog.Builder builder = new AlertDialog.Builder(mainActivity, android.R.style.Theme_Material_Light_Dialog_Alert);
-        builder.setTitle("Tra cứu theo thuộc tính");
-        builder.setMessage(item.getAlias());
-        builder.setCancelable(false).setNegativeButton("Hủy", new DialogInterface.OnClickListener() {
+        final Calendar[] calendar = new Calendar[2];
+        final AlertDialog.Builder builder_editValue = new AlertDialog.Builder(mainActivity, android.R.style.Theme_Material_Light_Dialog_Alert);
+        builder_editValue.setTitle("Tra cứu theo thuộc tính");
+        builder_editValue.setMessage(item.getAlias());
+        builder_editValue.setCancelable(false).setNegativeButton("Hủy", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 dialog.dismiss();
             }
         });
-        final LinearLayout layout = (LinearLayout) mainActivity.getLayoutInflater().
-                inflate(R.layout.layout_dialog_update_feature_listview, null);
-        builder.setView(layout);
-        final FrameLayout layoutTextView = layout.findViewById(R.id.layout_edit_viewmoreinfo_TextView);
-        final TextView textView = layout.findViewById(R.id.txt_edit_viewmoreinfo);
-        final Button button = layout.findViewById(R.id.btn_edit_viewmoreinfo);
+        LayoutInflater inflater = mainActivity.getLayoutInflater();
+        final LinearLayout layout = (LinearLayout) inflater.inflate(R.layout.layout_dialog_update_feature_listview, null);
+        final LinearLayout layoutTextView = layout.findViewById(R.id.layout_edit_queryDateTime);
+        final TextView txt_edit_viewmoreinfoBegin = layout.findViewById(R.id.txt_edit_viewmoreinfoBegin);
+        final TextView txt_edit_viewmoreinfoEnd = layout.findViewById(R.id.txt_edit_viewmoreinfoEnd);
+        ImageView img_selectTimeBegin = (ImageView) layout.findViewById(R.id.img_selectTimeBegin);
+        ImageView img_selectTimeEnd = (ImageView) layout.findViewById(R.id.img_selectTimeEnd);
         final LinearLayout layoutEditText = layout.findViewById(R.id.layout_edit_viewmoreinfo_Editext);
         final EditText editText = layout.findViewById(R.id.etxt_edit_viewmoreinfo);
         final LinearLayout layoutSpin = layout.findViewById(R.id.layout_edit_viewmoreinfo_Spinner);
@@ -281,8 +262,7 @@ public class TraCuu {
         } else switch (item.getFieldType()) {
             case DATE:
                 layoutTextView.setVisibility(View.VISIBLE);
-                textView.setText(item.getValue());
-                button.setOnClickListener(new View.OnClickListener() {
+                img_selectTimeBegin.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         final View dialogView = View.inflate(mainActivity, R.layout.date_time_picker, null);
@@ -292,8 +272,27 @@ public class TraCuu {
                             public void onClick(View view) {
                                 DatePicker datePicker = (DatePicker) dialogView.findViewById(R.id.date_picker);
                                 calendar[0] = new GregorianCalendar(datePicker.getYear(), datePicker.getMonth(), datePicker.getDayOfMonth());
-                                String date = String.format("%02d_%02d_%d", datePicker.getDayOfMonth(), datePicker.getMonth() + 1, datePicker.getYear());
-                                textView.setText(date);
+                                String date = String.format("%02d/%02d/%d", datePicker.getDayOfMonth(), datePicker.getMonth() + 1, datePicker.getYear());
+                                txt_edit_viewmoreinfoBegin.setText(date);
+                                alertDialog.dismiss();
+                            }
+                        });
+                        alertDialog.setView(dialogView);
+                        alertDialog.show();
+                    }
+                });
+                img_selectTimeEnd.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        final View dialogView = View.inflate(mainActivity, R.layout.date_time_picker, null);
+                        final android.app.AlertDialog alertDialog = new android.app.AlertDialog.Builder(mainActivity).create();
+                        dialogView.findViewById(R.id.date_time_set).setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                DatePicker datePicker = (DatePicker) dialogView.findViewById(R.id.date_picker);
+                                calendar[1] = new GregorianCalendar(datePicker.getYear(), datePicker.getMonth(), datePicker.getDayOfMonth());
+                                String date = String.format("%02d/%02d/%d", datePicker.getDayOfMonth(), datePicker.getMonth() + 1, datePicker.getYear());
+                                txt_edit_viewmoreinfoEnd.setText(date);
                                 alertDialog.dismiss();
                             }
                         });
@@ -323,7 +322,7 @@ public class TraCuu {
                 editText.setText(item.getValue());
                 break;
         }
-        builder.setPositiveButton("Cập nhật", new DialogInterface.OnClickListener() {
+        builder_editValue.setPositiveButton("Cập nhật", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 if (domain != null) {
@@ -331,8 +330,9 @@ public class TraCuu {
                 } else {
                     switch (item.getFieldType()) {
                         case DATE:
-                            item.setValue(textView.getText().toString());
-                            item.setCalendar(calendar[0]);
+                            item.setValue(txt_edit_viewmoreinfoBegin.getText().toString() + "-" + txt_edit_viewmoreinfoEnd.getText().toString());
+                            item.setCalendarBegin(calendar[0]);
+                            item.setCalendarEnd(calendar[1]);
                             break;
                         case DOUBLE:
                             try {
@@ -360,11 +360,11 @@ public class TraCuu {
                 }
                 TraCuuChiTietDiemDanhGiaAdapter adapter = (TraCuuChiTietDiemDanhGiaAdapter) parent.getAdapter();
                 new NotifyTraCuuAdapterValueChangeAsync(mainActivity).execute(adapter);
-//                    dialog.dismiss();
+                dialog.dismiss();
             }
         });
-        builder.setView(layout);
-        AlertDialog dialog = builder.create();
+        builder_editValue.setView(layout);
+        AlertDialog dialog = builder_editValue.create();
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dialog.show();
     }

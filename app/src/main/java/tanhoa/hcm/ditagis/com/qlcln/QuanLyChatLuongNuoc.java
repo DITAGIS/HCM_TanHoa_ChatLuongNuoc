@@ -163,15 +163,16 @@ public class QuanLyChatLuongNuoc extends AppCompatActivity implements Navigation
             featureLayerDTG.setUpdateFields(config.getUpdateFields());
             featureLayerDTG.setShowOnMap(config.isShowOnMap());
 
-            if(config.getName() != null && config.getName().equals(getString(R.string.name_diemdanhgianuoc))){
+            if (config.getName() != null && config.getName().equals(getString(R.string.name_diemdanhgianuoc))) {
                 featureLayer.setPopupEnabled(true);
-                mMapViewHandler = new MapViewHandler(featureLayerDTG, mCallout, mMapView, QuanLyChatLuongNuoc.this);
-                traCuu = new TraCuu(featureLayerDTG,QuanLyChatLuongNuoc.this,mCallout,mMapView);
+                mMapViewHandler = new MapViewHandler(featureLayerDTG, mMapView, QuanLyChatLuongNuoc.this);
+                traCuu = new TraCuu(featureLayerDTG, QuanLyChatLuongNuoc.this);
             }
             mFeatureLayerDTGS.add(featureLayerDTG);
             mMap.getOperationalLayers().add(featureLayer);
         }
-        popupInfos = new Popup(QuanLyChatLuongNuoc.this, mFeatureLayerDTGS, mCallout);
+        popupInfos = new Popup(QuanLyChatLuongNuoc.this,mMapView, mFeatureLayerDTGS, mCallout);
+
         mMapViewHandler.setPopupInfos(popupInfos);
         traCuu.setPopupInfos(popupInfos);
         mMap.addDoneLoadingListener(new Runnable() {
@@ -266,29 +267,6 @@ public class QuanLyChatLuongNuoc extends AppCompatActivity implements Navigation
         ArcGISRuntimeEnvironment.setLicense(getString(R.string.license));
     }
 
-    private void setRendererSuCoFeatureLayer(FeatureLayer mSuCoTanHoaLayer) {
-        UniqueValueRenderer uniqueValueRenderer = new UniqueValueRenderer();
-        uniqueValueRenderer.getFieldNames().add("TrangThai");
-        SimpleMarkerSymbol defaultSymbol = new SimpleMarkerSymbol(SimpleMarkerSymbol.Style.CIRCLE, Color.BLACK, 15);
-        SimpleMarkerSymbol chuaxuly = new SimpleMarkerSymbol(SimpleMarkerSymbol.Style.CIRCLE, Color.RED, 15);
-        SimpleMarkerSymbol dangxyly = new SimpleMarkerSymbol(SimpleMarkerSymbol.Style.CIRCLE, Color.YELLOW, 15);
-        SimpleMarkerSymbol daxuly = new SimpleMarkerSymbol(SimpleMarkerSymbol.Style.CIRCLE, Color.GREEN, 15);
-        uniqueValueRenderer.setDefaultSymbol(defaultSymbol);
-        uniqueValueRenderer.setDefaultLabel("Chưa xác định");
-
-        List<Object> chuaxulyValue = new ArrayList<>();
-        chuaxulyValue.add(0);
-        List<Object> dangxylyValue = new ArrayList<>();
-        dangxylyValue.add(2);
-        List<Object> daxulyValue = new ArrayList<>();
-        daxulyValue.add(1);
-
-        uniqueValueRenderer.getUniqueValues().add(new UniqueValueRenderer.UniqueValue("Chưa xử lý", "Chưa xử lý", chuaxuly, chuaxulyValue));
-        uniqueValueRenderer.getUniqueValues().add(new UniqueValueRenderer.UniqueValue("Chưa xử lý", "Chưa xử lý", dangxyly, dangxylyValue));
-        uniqueValueRenderer.getUniqueValues().add(new UniqueValueRenderer.UniqueValue("Chưa xử lý", "Chưa xử lý", daxuly, daxulyValue));
-        mSuCoTanHoaLayer.setRenderer(uniqueValueRenderer);
-    }
-
     private void changeStatusOfLocationDataSource() {
         mLocationDisplay = mMapView.getLocationDisplay();
 //        changeStatusOfLocationDataSource();
@@ -379,7 +357,7 @@ public class QuanLyChatLuongNuoc extends AppCompatActivity implements Navigation
         int id = item.getItemId();
         if (id == R.id.nav_thongke) {
             final Intent intent = new Intent(this, ThongKeActivity.class);
-            this.startActivity(intent);
+            this.startActivityForResult(intent, requestCode);
         } else if (id == R.id.nav_tracuu) {
 //            final Intent intent = new Intent(this, TraCuuActivity.class);
 //            this.startActivityForResult(intent, 1);
@@ -578,11 +556,9 @@ public class QuanLyChatLuongNuoc extends AppCompatActivity implements Navigation
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         try {
-            final int objectid = data.getIntExtra(getString(R.string.ket_qua_objectid), 1);
-            if (requestCode == 1) {
-                if (resultCode == Activity.RESULT_OK) {
-                    mMapViewHandler.queryByObjectID(String.valueOf(objectid));
-                }
+            String returnedResult = data.getExtras().get(getString(R.string.ket_qua_objectid)).toString();
+            if (resultCode == Activity.RESULT_OK) {
+                mMapViewHandler.queryByObjectID(returnedResult);
             }
         } catch (Exception e) {
         }

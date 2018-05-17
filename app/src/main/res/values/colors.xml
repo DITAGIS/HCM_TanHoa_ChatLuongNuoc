@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <color name="spiner_background_color">#fff</color>
+    <color name="spiner_border_color">#ccc</color>
+    <color name="spiner_color">#333</color>
+
     <color name="colorPrimary">#3F51B5</color>
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#66CDAA</color>

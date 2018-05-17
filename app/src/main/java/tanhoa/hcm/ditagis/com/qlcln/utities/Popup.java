@@ -17,6 +17,7 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.Spinner;
@@ -33,8 +34,12 @@ import com.esri.arcgisruntime.data.FeatureTable;
 import com.esri.arcgisruntime.data.FeatureType;
 import com.esri.arcgisruntime.data.Field;
 import com.esri.arcgisruntime.data.ServiceFeatureTable;
+import com.esri.arcgisruntime.geometry.Envelope;
+import com.esri.arcgisruntime.geometry.Point;
+import com.esri.arcgisruntime.layers.FeatureLayer;
 import com.esri.arcgisruntime.loadable.LoadStatus;
 import com.esri.arcgisruntime.mapping.view.Callout;
+import com.esri.arcgisruntime.mapping.view.MapView;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -60,20 +65,25 @@ public class Popup extends AppCompatActivity implements View.OnClickListener {
     private FeatureLayerDTG mFeatureLayerDTG;
     private List<String> lstFeatureType;
     private LinearLayout linearLayout;
+    private MapView mMapView;
     private FeatureTable table_thoigiancln;
     private FeatureLayerDTG featureLayerDTG_MauDanhGia;
     private EditingMauKiemNghiem editingMauKiemNghiem;
     private SimpleDateFormat format_yearfirst = new SimpleDateFormat("yyyy/MM/dd ");
+    private static double DELTA_MOVE_Y = 0;//7000;
 
-    public Popup(QuanLyChatLuongNuoc mainActivity,List<FeatureLayerDTG> layerDTGS, Callout callout) {
+    public Popup(QuanLyChatLuongNuoc mainActivity,MapView mMapView,List<FeatureLayerDTG> layerDTGS, Callout callout) {
         this.mainActivity = mainActivity;
         this.mServiceFeatureTable = getServiceFeatureTable(layerDTGS,mainActivity.getResources().getString(R.string.name_diemdanhgianuoc));
         this.mCallout = callout;
+        this.mMapView = mMapView;
         this.table_thoigiancln = getServiceFeatureTable(layerDTGS,mainActivity.getResources().getString(R.string.name_maudanhgia));
         this.featureLayerDTG_MauDanhGia = getFeatureLayerDTG(layerDTGS,mainActivity.getResources().getString(R.string.name_maudanhgia));
         this.editingMauKiemNghiem = new EditingMauKiemNghiem(mainActivity, featureLayerDTG_MauDanhGia);
 
     }
+
+
     public ServiceFeatureTable getServiceFeatureTable(List<FeatureLayerDTG> layerDTGS, String id){
         for(FeatureLayerDTG layerDTG: layerDTGS) {
             if (layerDTG.getFeatureLayer().getId().equals(id)) {
@@ -115,9 +125,19 @@ public class Popup extends AppCompatActivity implements View.OnClickListener {
             }
         }
     }
+    public void dimissCallout(){
+        FeatureLayer featureLayer = mFeatureLayerDTG.getFeatureLayer();
+        featureLayer.clearSelection();
+        if (mCallout != null && mCallout.isShowing()){
+            mCallout.dismiss();
+        }
+    }
 
-    public LinearLayout createPopup(final ArcGISFeature mSelectedArcGISFeature) {
+    public LinearLayout showPopup(final ArcGISFeature mSelectedArcGISFeature) {
+        dimissCallout();
         this.mSelectedArcGISFeature = mSelectedArcGISFeature;
+        FeatureLayer featureLayer = mFeatureLayerDTG.getFeatureLayer();
+        featureLayer.selectFeature(mSelectedArcGISFeature);
         lstFeatureType = new ArrayList<>();
         for (int i = 0; i < mSelectedArcGISFeature.getFeatureTable().getFeatureTypes().size(); i++) {
             lstFeatureType.add(mSelectedArcGISFeature.getFeatureTable().getFeatureTypes().get(i).getName());
@@ -125,7 +145,7 @@ public class Popup extends AppCompatActivity implements View.OnClickListener {
         LayoutInflater inflater = LayoutInflater.from(this.mainActivity.getApplicationContext());
         linearLayout = (LinearLayout) inflater.inflate(R.layout.popup_diemdanhgianuoc, null);
         refressPopup();
-        if (mCallout != null) mCallout.dismiss();
+
         ((ImageButton) linearLayout.findViewById(R.id.imgBtn_viewtablethoigian)).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -147,6 +167,19 @@ public class Popup extends AppCompatActivity implements View.OnClickListener {
             }
         });
         linearLayout.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        Envelope envelope = mSelectedArcGISFeature.getGeometry().getExtent();
+        Envelope envelope1 = new Envelope(new Point(envelope.getXMin(), envelope.getYMin() + DELTA_MOVE_Y), new Point(envelope.getXMax(), envelope.getYMax() + DELTA_MOVE_Y));
+        mMapView.setViewpointGeometryAsync(envelope1, 0);
+        // show CallOut
+        mCallout.setLocation(envelope.getCenter());
+        mCallout.setContent(linearLayout);
+        this.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                mCallout.refresh();
+                mCallout.show();
+            }
+        });
         return linearLayout;
     }
 
@@ -292,10 +325,10 @@ public class Popup extends AppCompatActivity implements View.OnClickListener {
                 });
                 final LinearLayout layout = (LinearLayout) mainActivity.getLayoutInflater().
                         inflate(R.layout.layout_dialog_update_feature_listview, null);
-                builder.setView(layout);
+
                 final FrameLayout layoutTextView = layout.findViewById(R.id.layout_edit_viewmoreinfo_TextView);
                 final TextView textView = layout.findViewById(R.id.txt_edit_viewmoreinfo);
-                final Button button = layout.findViewById(R.id.btn_edit_viewmoreinfo);
+                ImageView img_selectTime = (ImageView) layout.findViewById(R.id.img_selectTime);
                 final LinearLayout layoutEditText = layout.findViewById(R.id.layout_edit_viewmoreinfo_Editext);
                 final EditText editText = layout.findViewById(R.id.etxt_edit_viewmoreinfo);
                 final LinearLayout layoutSpin = layout.findViewById(R.id.layout_edit_viewmoreinfo_Spinner);
@@ -325,7 +358,7 @@ public class Popup extends AppCompatActivity implements View.OnClickListener {
                     case DATE:
                         layoutTextView.setVisibility(View.VISIBLE);
                         textView.setText(item.getValue());
-                        button.setOnClickListener(new View.OnClickListener() {
+                        img_selectTime.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
                                 final View dialogView = View.inflate(mainActivity, R.layout.date_time_picker, null);
@@ -397,7 +430,7 @@ public class Popup extends AppCompatActivity implements View.OnClickListener {
                         new NotifyDataSetChangeAsync(mainActivity).execute(adapter);
                     }
                 });
-
+                builder.setView(layout);
                 AlertDialog dialog = builder.create();
                 dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
                 dialog.show();

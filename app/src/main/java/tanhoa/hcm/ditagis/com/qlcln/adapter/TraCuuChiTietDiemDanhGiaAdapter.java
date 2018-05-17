@@ -80,7 +80,8 @@ public class TraCuuChiTietDiemDanhGiaAdapter extends ArrayAdapter<TraCuuChiTietD
         private String alias;
         private String value;
         private Field.Type fieldType;
-        private Calendar calendar;
+        private Calendar calendarBegin;
+        private Calendar calendarEnd;
 
         public Item() {
         }
@@ -89,6 +90,14 @@ public class TraCuuChiTietDiemDanhGiaAdapter extends ArrayAdapter<TraCuuChiTietD
             this.fieldName = fieldName;
             this.alias = alias;
             this.value = value;
+        }
+
+        public Calendar getCalendarEnd() {
+            return calendarEnd;
+        }
+
+        public void setCalendarEnd(Calendar calendarEnd) {
+            this.calendarEnd = calendarEnd;
         }
 
         public String getFieldName() {
@@ -123,12 +132,12 @@ public class TraCuuChiTietDiemDanhGiaAdapter extends ArrayAdapter<TraCuuChiTietD
             this.fieldType = fieldType;
         }
 
-        public Calendar getCalendar() {
-            return calendar;
+        public Calendar getCalendarBegin() {
+            return calendarBegin;
         }
 
-        public void setCalendar(Calendar calendar) {
-            this.calendar = calendar;
+        public void setCalendarBegin(Calendar calendarBegin) {
+            this.calendarBegin = calendarBegin;
         }
     }
 
