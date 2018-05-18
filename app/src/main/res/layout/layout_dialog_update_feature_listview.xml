@@ -63,7 +63,7 @@
                 android:layout_gravity="center_vertical"
                 android:layout_weight="1"
                 android:paddingLeft="20dp"
-                android:text="Đến ngày"
+                android:text="Từ ngày"
                 android:textAppearance="?android:attr/textAppearanceMedium" />
 
             <ImageView
@@ -88,7 +88,7 @@
                 android:layout_gravity="center_vertical"
                 android:layout_weight="1"
                 android:paddingLeft="20dp"
-                android:text="Từ ngày"
+                android:text="Đến ngày"
                 android:textAppearance="?android:attr/textAppearanceMedium" />
 
             <ImageView
