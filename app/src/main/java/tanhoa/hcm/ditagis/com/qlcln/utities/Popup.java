@@ -217,8 +217,8 @@ public class Popup extends AppCompatActivity implements View.OnClickListener {
                         if (valueFeatureType != null) item.setValue(valueFeatureType);
                     } else if (field.getDomain() != null) {
                         List<CodedValue> codedValues = ((CodedValueDomain) this.mSelectedArcGISFeature.getFeatureTable().getField(item.getFieldName()).getDomain()).getCodedValues();
-                        String valueDomain = getValueDomain(codedValues, value.toString()).toString();
-                        if (valueDomain != null) item.setValue(valueDomain);
+                        Object valueDomain = getValueDomain(codedValues, value.toString());
+                        if (valueDomain != null) item.setValue(valueDomain.toString());
                     } else switch (field.getFieldType()) {
                         case DATE:
                             item.setValue(Constant.DATE_FORMAT.format(((Calendar) value).getTime()));
