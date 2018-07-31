@@ -113,36 +113,23 @@ public class QuanLyChatLuongNuoc extends AppCompatActivity implements Navigation
         super.onCreate(savedInstanceState);
         setContentView(tanhoa.hcm.ditagis.com.qlcln.R.layout.activity_quan_ly_chat_luong_nuoc);
         setLicense();
+        setUp();
         //for camera
-        StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();
-        StrictMode.setVmPolicy(builder.build());
-        Toolbar toolbar = (Toolbar) findViewById(tanhoa.hcm.ditagis.com.qlcln.R.id.toolbar);
-        setSupportActionBar(toolbar);
-        this.mListViewSearch = findViewById(tanhoa.hcm.ditagis.com.qlcln.R.id.lstview_search);
-        //đưa listview search ra phía sau
-        this.mListViewSearch.invalidate();
-        List<DanhSachDiemDanhGiaAdapter.Item> items = new ArrayList<>();
-        this.danhSachDiemDanhGiaAdapter = new DanhSachDiemDanhGiaAdapter(QuanLyChatLuongNuoc.this, items);
-        this.mListViewSearch.setAdapter(danhSachDiemDanhGiaAdapter);
-        this.mListViewSearch.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                String objectID = ((DanhSachDiemDanhGiaAdapter.Item) parent.getItemAtPosition(position)).getObjectID();
-                mMapViewHandler.queryByObjectID(objectID);
-                danhSachDiemDanhGiaAdapter.clear();
-                danhSachDiemDanhGiaAdapter.notifyDataSetChanged();
-            }
-        });
-        requestPermisson();
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.addDrawerListener(toggle);
-        toggle.syncState();
-
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);
+        initListViewSearch();
+        initMapView();
+        findViewById(R.id.layout_layer_open_street_map).setOnClickListener(this);
+        findViewById(R.id.layout_layer_street_map).setOnClickListener(this);
+        findViewById(R.id.layout_layer_topo).setOnClickListener(this);
+        findViewById(R.id.floatBtnLayer).setOnClickListener(this);
+        findViewById(R.id.floatBtnAdd).setOnClickListener(this);
+        findViewById(R.id.btn_add_feature_close).setOnClickListener(this);
+        findViewById(R.id.btn_layer_close).setOnClickListener(this);
+        findViewById(R.id.img_layvitri).setOnClickListener(this);
+        findViewById(R.id.floatBtnLocation).setOnClickListener(this);
+        findViewById(R.id.floatBtnHome).setOnClickListener(this);
+    }
+    private void initMapView() {
         mMapView = (MapView) findViewById(R.id.mapView);
-
         // create an empty map instance
         final ArcGISMap mMap = new ArcGISMap(Basemap.Type.OPEN_STREET_MAP, LATITUDE, LONGTITUDE, LEVEL_OF_DETAIL);
         mMapView.setMap(mMap);
@@ -156,14 +143,14 @@ public class QuanLyChatLuongNuoc extends AppCompatActivity implements Navigation
             featureLayer.setName(config.getAlias());
             featureLayer.setMaxScale(0);
             featureLayer.setMinScale(1000000);
-            featureLayer.setId(config.getName());
+            featureLayer.setId(config.getId());
             FeatureLayerDTG featureLayerDTG = new FeatureLayerDTG(featureLayer, config.getAlias(), config.isShowOnMap());
             featureLayerDTG.setOutFields(config.getOutFields());
             featureLayerDTG.setQueryFields(config.getQueryFields());
             featureLayerDTG.setUpdateFields(config.getUpdateFields());
             featureLayerDTG.setShowOnMap(config.isShowOnMap());
 
-            if (config.getName() != null && config.getName().equals(getString(R.string.name_diemdanhgianuoc))) {
+            if (config.getId() != null && config.getId().equals(getString(R.string.id_diemdanhgianuoc))) {
                 featureLayer.setPopupEnabled(true);
                 mMapViewHandler = new MapViewHandler(featureLayerDTG, mMapView, QuanLyChatLuongNuoc.this);
                 traCuu = new TraCuu(featureLayerDTG, QuanLyChatLuongNuoc.this);
@@ -250,18 +237,39 @@ public class QuanLyChatLuongNuoc extends AppCompatActivity implements Navigation
                 mMapView.setViewpointCenterAsync(geometry.getExtent().getCenter());
             }
         });
-        findViewById(R.id.layout_layer_open_street_map).setOnClickListener(this);
-        findViewById(R.id.layout_layer_street_map).setOnClickListener(this);
-        findViewById(R.id.layout_layer_topo).setOnClickListener(this);
-        findViewById(R.id.floatBtnLayer).setOnClickListener(this);
-        findViewById(R.id.floatBtnAdd).setOnClickListener(this);
-        findViewById(R.id.btn_add_feature_close).setOnClickListener(this);
-        findViewById(R.id.btn_layer_close).setOnClickListener(this);
-        findViewById(R.id.img_layvitri).setOnClickListener(this);
-        findViewById(R.id.floatBtnLocation).setOnClickListener(this);
-        findViewById(R.id.floatBtnHome).setOnClickListener(this);
     }
+    private void initListViewSearch(){
+        this.mListViewSearch = findViewById(tanhoa.hcm.ditagis.com.qlcln.R.id.lstview_search);
+        //đưa listview search ra phía sau
+        this.mListViewSearch.invalidate();
+        List<DanhSachDiemDanhGiaAdapter.Item> items = new ArrayList<>();
+        this.danhSachDiemDanhGiaAdapter = new DanhSachDiemDanhGiaAdapter(QuanLyChatLuongNuoc.this, items);
+        this.mListViewSearch.setAdapter(danhSachDiemDanhGiaAdapter);
+        this.mListViewSearch.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                String objectID = ((DanhSachDiemDanhGiaAdapter.Item) parent.getItemAtPosition(position)).getObjectID();
+                mMapViewHandler.queryByObjectID(objectID);
+                danhSachDiemDanhGiaAdapter.clear();
+                danhSachDiemDanhGiaAdapter.notifyDataSetChanged();
+            }
+        });
+    }
+    private void setUp(){
+        StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();
+        StrictMode.setVmPolicy(builder.build());
+        Toolbar toolbar = (Toolbar) findViewById(tanhoa.hcm.ditagis.com.qlcln.R.id.toolbar);
+        setSupportActionBar(toolbar);
 
+        requestPermisson();
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        drawer.addDrawerListener(toggle);
+        toggle.syncState();
+
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(this);
+    }
     private void setLicense() {
         //way 1
         ArcGISRuntimeEnvironment.setLicense(getString(R.string.license));
@@ -365,7 +373,10 @@ public class QuanLyChatLuongNuoc extends AppCompatActivity implements Navigation
         } else if (id == R.id.nav_setting) {
             final Intent intent = new Intent(this, SettingsActivity.class);
             this.startActivityForResult(intent, 1);
-        } else if (id == R.id.nav_logOut) {
+        } else if(id == R.id.refresh_setting){
+           initMapView();
+        }
+        else if (id == R.id.nav_logOut) {
             this.finish();
         }
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);

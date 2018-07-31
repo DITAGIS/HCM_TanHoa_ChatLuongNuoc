@@ -9,7 +9,7 @@ import android.content.Context;
 public class Config {
     private String url;
     private String alias;
-    private String name;
+    private String id;
     private String[] addFields;
     private String[] updateFields;
     private String[] queryFields;
@@ -50,10 +50,10 @@ public class Config {
         isShowOnMap = showOnMap;
     }
 
-    public Config(String url, String alias, String name,String[] addField, String[] updateField, String[] queryField, String[] outField, boolean isShowOnMap) {
+    public Config(String url, String alias, String id,String[] addField, String[] updateField, String[] queryField, String[] outField, boolean isShowOnMap) {
         this.url = url;
         this.alias = alias;
-        this.name = name;
+        this.id = id;
         this.addFields = addField;
         this.updateFields = updateField;
         this.queryFields = queryField;
@@ -92,11 +92,11 @@ public class Config {
         this.alias = alias;
     }
 
-    public String getName() {
-        return name;
+    public String getId() {
+        return id;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setId(String id) {
+        this.id = id;
     }
 }

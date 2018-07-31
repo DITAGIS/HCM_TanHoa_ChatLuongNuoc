@@ -28,6 +28,8 @@
     <string name="attachment">attachment</string>
     <!--DeclngayCapNhatalue config begin-->
     <!--Url-->
+
+    <!--<string name="url_service_diemdanhgianuoc"> http://sampleserver6.arcgisonline.com/arcgis/rest/services/DamageAssessment/FeatureServer/0</string>-->
     <string name="url_service_diemdanhgianuoc">http://113.161.88.180:800/arcgis/rest/services/TanHoa/ChatLuongNuoc/FeatureServer/0</string>
     <string name="url_service_maudanhgia">http://113.161.88.180:800/arcgis/rest/services/TanHoa/ChatLuongNuoc/FeatureServer/1</string>
     <!--Alias-->
@@ -65,6 +67,7 @@
     <!--navigation-->
     <string name="nav_tra_cuu">Tra cứu</string>
     <string name="nav_cai_dat">Cài đặt</string>
+    <string name="nav_lam_moi_du_lieu">Làm mới dữ liệu</string>
     <string name="nav_log_out">Đăng xuất</string>
     <string name="nav_cai_dat_them_su_co_title">Phương thức thêm điểm sự cố</string>
     <string name="nav_cai_dat_tim_kiem_title">Tùy chọn tìm kiếm</string>
@@ -99,6 +102,8 @@
     <string name="DATA_SUCCESSFULLY_UPDATED">Cập nhật dữ liệu thành công </string>
     <string name="FAILED_TO_UPDATE_DATA">Cập nhật dữ liệu không thành công</string>
     <string name="INCORRECT_INPUT_FORMAT">Số liệu nhập vào không đúng định dạng!!!</string>
+    <string name="id_diemdanhgianuoc">diemdanhgiaLYR</string>
+    <string name="id_maudanhgia">hs_maukiemnghiem_TBL</string>
 
 
 </resources>

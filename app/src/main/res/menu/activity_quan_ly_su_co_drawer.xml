@@ -38,7 +38,10 @@
         </menu>
     </item>
 
-    <group android:checkableBehavior="single">
+    <group android:checkableBehavior="single"> <item
+        android:id="@+id/refresh_setting"
+        android:icon="@drawable/ic_refresh"
+        android:title="@string/nav_lam_moi_du_lieu" />
         <item
             android:id="@+id/nav_setting"
             android:icon="@drawable/ic_settings"

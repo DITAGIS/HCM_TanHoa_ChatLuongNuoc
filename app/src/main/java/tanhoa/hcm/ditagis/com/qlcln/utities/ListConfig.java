@@ -29,12 +29,12 @@ public class ListConfig {
         String url_service_diemdanhgianuoc = mContext.getResources().getString(R.string.url_service_diemdanhgianuoc);
         String url_service_maudanhgia = mContext.getResources().getString(R.string.url_service_maudanhgia);
         String alias_diemdanhgianuoc = mContext.getResources().getString(R.string.alias_diemdanhgianuoc);
-        String name_diemdanhgianuoc = mContext.getResources().getString(R.string.name_diemdanhgianuoc);
+        String id_diemdanhgianuoc = mContext.getResources().getString(R.string.id_diemdanhgianuoc);
         String[] addFields_diemdanhgianuoc = mContext.getResources().getStringArray(R.array.addFields_diemdanhgianuoc);
         String[] updateFields_diemdanhgianuoc = mContext.getResources().getStringArray(R.array.updateFields_diemdanhgianuoc);
         String[] queryFields_diemdanhgianuoc = mContext.getResources().getStringArray(R.array.queryFields_diemdanhgianuoc);
         String[] outFields_diemdanhgianuoc = mContext.getResources().getStringArray(R.array.outFields_diemdanhgianuoc);
-        Config configDiemDanhGiaNuoc = new Config(url_service_diemdanhgianuoc, alias_diemdanhgianuoc, name_diemdanhgianuoc, addFields_diemdanhgianuoc, updateFields_diemdanhgianuoc, queryFields_diemdanhgianuoc, null,true);
+        Config configDiemDanhGiaNuoc = new Config(url_service_diemdanhgianuoc, alias_diemdanhgianuoc, id_diemdanhgianuoc, addFields_diemdanhgianuoc, updateFields_diemdanhgianuoc, queryFields_diemdanhgianuoc, null,true);
         configs.add(configDiemDanhGiaNuoc);
         String[] addFields_maudanhgia = mContext.getResources().getStringArray(R.array.addFields_maudanhgia);
         String[] updateFields_maudanhgia = mContext.getResources().getStringArray(R.array.updateFields_maudanhgia);
@@ -42,9 +42,9 @@ public class ListConfig {
         String[] outFields_maudanhgia = mContext.getResources().getStringArray(R.array.outFields_maudanhgia);
 
 
-        String name_maudanhgia = mContext.getResources().getString(R.string.name_maudanhgia);
+        String id_maudanhgia = mContext.getResources().getString(R.string.id_maudanhgia);
         String alias_maudanhgia = mContext.getResources().getString(R.string.alias_maudanhgia);
-        Config configMauDanhGia = new Config(url_service_maudanhgia,alias_maudanhgia,name_maudanhgia,addFields_maudanhgia, updateFields_maudanhgia, queryFields_maudanhgia, outFields_maudanhgia,false);
+        Config configMauDanhGia = new Config(url_service_maudanhgia,alias_maudanhgia,id_maudanhgia,addFields_maudanhgia, updateFields_maudanhgia, queryFields_maudanhgia, outFields_maudanhgia,false);
         configs.add(configMauDanhGia);
         return configs;
     }

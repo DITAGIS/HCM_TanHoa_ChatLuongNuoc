@@ -88,11 +88,21 @@ public class QueryDiemDanhGiaAsync extends AsyncTask<String, List<DanhSachDiemDa
                         Feature feature = (Feature) iterator.next();
                         DanhSachDiemDanhGiaAdapter.Item item = new DanhSachDiemDanhGiaAdapter.Item();
                         Map<String, Object> attributes = feature.getAttributes();
-                        item.setObjectID(attributes.get(mContext.getString(R.string.OBJECTID)).toString());
-                        item.setiDDiemDanhGia(attributes.get(mContext.getString(R.string.IDDIEMDANHGIA)).toString());
-                        String format_date = Constant.DATE_FORMAT.format(((Calendar) attributes.get(Constant.NGAY_CAP_NHAT)).getTime());
-                        item.setNgayCapNhat(format_date);
-                        item.setDiaChi(attributes.get(mContext.getString(R.string.DIACHI)).toString());
+                        Object objectID = attributes.get(mContext.getString(R.string.OBJECTID));
+                        Object idDiemDanhGia = attributes.get(mContext.getString(R.string.IDDIEMDANHGIA));
+                        Object ngayCapNhat = attributes.get(mContext.getString(R.string.NGAY_CAP_NHAT));
+                        Object diaChi = attributes.get(mContext.getString(R.string.DIACHI));
+                        if (objectID != null)
+                            item.setObjectID(objectID.toString());
+                        if (idDiemDanhGia != null)
+                            item.setiDDiemDanhGia(idDiemDanhGia.toString());
+                        if (ngayCapNhat != null){
+                            String format_date = Constant.DATE_FORMAT.format(((Calendar) ngayCapNhat).getTime());
+                            item.setNgayCapNhat(format_date);
+                        }
+                        if (diaChi != null){
+                            item.setDiaChi(diaChi.toString());
+                        }
                         items.add(item);
                         features.add(feature);
                     }

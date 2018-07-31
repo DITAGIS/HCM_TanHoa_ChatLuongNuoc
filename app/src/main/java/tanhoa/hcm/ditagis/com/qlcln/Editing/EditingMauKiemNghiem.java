@@ -66,7 +66,21 @@ public class EditingMauKiemNghiem implements RefreshTableMauKiemNghiemAsync.Asyn
         table_maudanhgia = (ServiceFeatureTable) featureLayerDTG_MauDanhGia.getFeatureLayer().getFeatureTable();
     }
 
-    public void showThoiGianChatLuongNuoc(final ArcGISFeature mSelectedArcGISFeature) {
+    public void deleteDanhSachMauDanhGia(final ArcGISFeature mSelectedArcGISFeature) {
+        final Map<String, Object> attributes = mSelectedArcGISFeature.getAttributes();
+        final String idDiemDanhGia = attributes.get(mainActivity.getString(R.string.IDDIEMDANHGIA)).toString();
+        this.idDiemDanhGia = idDiemDanhGia;
+        if (idDiemDanhGia != null) {
+            List<MauKiemNghiemApdapter.MauKiemNghiem> mauKiemNghiems = new ArrayList<>();
+            mauKiemNghiemApdapter = new MauKiemNghiemApdapter(mainActivity, mauKiemNghiems);
+            getRefreshTableThoiGianCLNAsync();
+            for (Feature feature : table_feature) {
+                deleteFeature(feature);
+            }
+        }
+    }
+
+    public void showDanhSachMauDanhGia(final ArcGISFeature mSelectedArcGISFeature) {
         final Map<String, Object> attributes = mSelectedArcGISFeature.getAttributes();
         final String idDiemDanhGia = attributes.get(mainActivity.getString(R.string.IDDIEMDANHGIA)).toString();
         this.idDiemDanhGia = idDiemDanhGia;
@@ -75,7 +89,7 @@ public class EditingMauKiemNghiem implements RefreshTableMauKiemNghiemAsync.Asyn
             final View layout_table_maudanhgia = mainActivity.getLayoutInflater().inflate(R.layout.layout_title_listview_button, null);
             ListView listView = (ListView) layout_table_maudanhgia.findViewById(R.id.listview);
 
-            ((TextView) layout_table_maudanhgia.findViewById(R.id.txtTitlePopup)).setText( mainActivity.getString(R.string.title_danhsachmaukiemnghiem));
+            ((TextView) layout_table_maudanhgia.findViewById(R.id.txtTitlePopup)).setText(mainActivity.getString(R.string.title_danhsachmaukiemnghiem));
             Button btnAdd = (Button) layout_table_maudanhgia.findViewById(R.id.btnAdd);
             btnAdd.setText("Thêm dữ liệu");
             btnAdd.setOnClickListener(new View.OnClickListener() {
@@ -102,7 +116,8 @@ public class EditingMauKiemNghiem implements RefreshTableMauKiemNghiemAsync.Asyn
 
                                 if (iterator.hasNext()) {
                                     Feature feature = (Feature) iterator.next();
-                                    showInfosSelectedItem(feature);                                }
+                                    showInfosSelectedItem(feature);
+                                }
 
                             } catch (InterruptedException e) {
                                 e.printStackTrace();
@@ -125,11 +140,13 @@ public class EditingMauKiemNghiem implements RefreshTableMauKiemNghiemAsync.Asyn
         }
     }
 
-    private void showInfosSelectedItem(Feature feature){
+    private void showInfosSelectedItem(Feature feature) {
         Map<String, Object> attributes = feature.getAttributes();
         View layout_chitiet_maudanhgia = mainActivity.getLayoutInflater().inflate(R.layout.layout_title_listview, null);
         ListView listview_chitiet_maudanhgia = (ListView) layout_chitiet_maudanhgia.findViewById(R.id.listview);
-
+        if (attributes.get("IDMauKiemNghiem") != null) {
+            ((TextView) layout_chitiet_maudanhgia.findViewById(R.id.txtTongItem)).setText(attributes.get("IDMauKiemNghiem").toString());
+        }
         final List<ChiTietMauKiemNghiemAdapter.Item> items = new ArrayList<>();
         List<Field> fields = table_maudanhgia.getFields();
         final String[] updateFields = featureLayerDTG_MauDanhGia.getUpdateFields();
@@ -154,6 +171,10 @@ public class EditingMauKiemNghiem implements RefreshTableMauKiemNghiemAsync.Asyn
                 }
             }
             for (String updateField : updateFields) {
+                if(updateField.equals("*")){
+                    item.setEdit(true);
+                    break;
+                }
                 if (field.getName().equals(updateField)) {
                     item.setEdit(true);
                 }
@@ -231,6 +252,7 @@ public class EditingMauKiemNghiem implements RefreshTableMauKiemNghiemAsync.Asyn
             }
         });
     }
+
     private void getRefreshTableThoiGianCLNAsync() {
         new RefreshTableMauKiemNghiemAsync(mainActivity, table_maudanhgia, mauKiemNghiemApdapter, new RefreshTableMauKiemNghiemAsync.AsyncResponse() {
             @Override
@@ -304,10 +326,9 @@ public class EditingMauKiemNghiem implements RefreshTableMauKiemNghiemAsync.Asyn
                     item.setValue(idDiemDanhGia);
                 }
                 if (field.getName().equals(mainActivity.getString(R.string.IDMAUKIEMNGHIEM))) {
-                    if(table_feature.size() < 9){
+                    if (table_feature.size() < 9) {
                         item.setValue("0" + (table_feature.size() + 1) + "_" + idDiemDanhGia);
-                    }
-                    else item.setValue((table_feature.size() + 1) + "_" + idDiemDanhGia);
+                    } else item.setValue((table_feature.size() + 1) + "_" + idDiemDanhGia);
                 }
                 if (field.getName().equals(mainActivity.getString(R.string.NGAY_CAP_NHAT))) {
                     item.setValue(Constant.DATE_FORMAT.format(Calendar.getInstance().getTime()));
@@ -446,7 +467,7 @@ public class EditingMauKiemNghiem implements RefreshTableMauKiemNghiemAsync.Asyn
                                 Toast.makeText(mainActivity.getApplicationContext(), mainActivity.getString(R.string.DATA_SUCCESSFULLY_UPDATED), Toast.LENGTH_SHORT).show();
                                 getRefreshTableThoiGianCLNAsync();
                             } else {
-                                Toast.makeText(mainActivity.getApplicationContext(),mainActivity.getString(R.string.FAILED_TO_UPDATE_DATA), Toast.LENGTH_SHORT).show();
+                                Toast.makeText(mainActivity.getApplicationContext(), mainActivity.getString(R.string.FAILED_TO_UPDATE_DATA), Toast.LENGTH_SHORT).show();
                             }
                         } catch (InterruptedException e) {
                             e.printStackTrace();
@@ -511,7 +532,7 @@ public class EditingMauKiemNghiem implements RefreshTableMauKiemNghiemAsync.Asyn
                                 public void onClick(View view) {
                                     DatePicker datePicker = (DatePicker) dialogView.findViewById(R.id.date_picker);
                                     calendar[0] = new GregorianCalendar(datePicker.getYear(), datePicker.getMonth(), datePicker.getDayOfMonth());
-                                    String date = String.format("%02d_%02d_%d", datePicker.getDayOfMonth(), datePicker.getMonth() + 1, datePicker.getYear());
+                                    String date = String.format("%02d/%02d/%d", datePicker.getDayOfMonth(), datePicker.getMonth() + 1, datePicker.getYear());
                                     textView.setText(date);
                                     alertDialog.dismiss();
                                 }
