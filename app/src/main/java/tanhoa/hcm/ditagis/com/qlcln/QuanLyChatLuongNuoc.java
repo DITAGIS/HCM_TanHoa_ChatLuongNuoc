@@ -121,11 +121,7 @@ public class QuanLyChatLuongNuoc extends AppCompatActivity implements
         setContentView(tanhoa.hcm.ditagis.com.qlcln.R.layout.activity_quan_ly_chat_luong_nuoc);
         startGPS();
         startSignIn();
-        setLicense();
-        setUp();
-        //for camera
-        initListViewSearch();
-        initMapView();
+
         findViewById(R.id.layout_layer_open_street_map).setOnClickListener(this);
         findViewById(R.id.layout_layer_street_map).setOnClickListener(this);
         findViewById(R.id.layout_layer_topo).setOnClickListener(this);
@@ -646,6 +642,12 @@ public class QuanLyChatLuongNuoc extends AppCompatActivity implements
                     if (Activity.RESULT_OK != resultCode) {
                         finish();
                         return;
+                    }else{
+                        setLicense();
+                        setUp();
+                        //for camera
+                        initListViewSearch();
+                        initMapView();
                     }
 
             }
