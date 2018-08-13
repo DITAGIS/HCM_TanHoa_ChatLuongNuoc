@@ -51,6 +51,7 @@
     <string name="IDMAUKIEMNGHIEM">IDMauKiemNghiem</string>
     <string name="TENMAU">TenMau</string>
     <!--Attribute MauKiemNghiem End-->
+    <string name="SERVICES_URL">http://sawagis.vn/tanhoa1/api</string>
 
     <string name="title_danhsachcacdiemdanhgia">Danh sách các mẫu đánh giá</string>
     <string name="title_danhsachmaukiemnghiem">Danh sách mẫu kiểm nghiệm</string>
@@ -89,10 +90,24 @@
     <string name="preference_settings_tuy_chon_tim_kiem">preference_settings_tuy_chon_tim_kiem</string>
     <string name="preference_settings_tuy_chon_tim_kiem_co_san">Tìm kiếm sự cố</string>
     <string name="preference_settings_tuy_chon_tim_kiem_chua_co">Tìm vị trí</string>
+    <string name="preference_username">username</string>
+    <string name="preference_password">pasword</string>
+    <string name="preference_displayname">displayname</string>
+    <string name="preference_login_api">preference_login_api</string>
+
+    <string name="sql_coloumn_login_displayname">namedisplay</string>
+    <string name="sql_coloumn_login_tanbinh">tanbinh</string>
+    <string name="sql_coloumn_login_tanphu">tanphu</string>
+    <string name="sql_coloumn_login_phunhuan">phunhuan</string>
+
+    <string name="validate_no_connect">Không có kết nối internet</string>
+    <string name="info_login_empty">Danh bạ hoặc mật khẩu không được để trống</string>
+    <string name="validate_login_fail">Sai danh bạ hoặc mật khẩu</string>
 
     <string name="format_day_yearfirst">yyyy-MM-dd HH:mm:ss</string>
     <string name="format_time_day_month_year">dd/MM/yyyy</string>
-
+    <string name="connect_message">Đang kết nối đến máy chủ…</string>
+    <string name="login_message">Đang kiểm tra thông tin đăng nhập…</string>
 
     <!--display process status -->
     <string name="DATA_SUCCESSFULLY_INSERTED">Thêm dữ liệu thành công</string>

@@ -8,8 +8,10 @@ import android.content.pm.PackageManager;
 import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Color;
 import android.graphics.Matrix;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -53,16 +55,14 @@ import com.esri.arcgisruntime.geometry.GeometryEngine;
 import com.esri.arcgisruntime.geometry.Point;
 import com.esri.arcgisruntime.geometry.SpatialReferences;
 import com.esri.arcgisruntime.layers.FeatureLayer;
-import com.esri.arcgisruntime.layers.Layer;
 import com.esri.arcgisruntime.mapping.ArcGISMap;
 import com.esri.arcgisruntime.mapping.Basemap;
-import com.esri.arcgisruntime.mapping.LayerList;
 import com.esri.arcgisruntime.mapping.view.Callout;
 import com.esri.arcgisruntime.mapping.view.DefaultMapViewOnTouchListener;
 import com.esri.arcgisruntime.mapping.view.LocationDisplay;
 import com.esri.arcgisruntime.mapping.view.MapView;
-import com.esri.arcgisruntime.symbology.SimpleMarkerSymbol;
-import com.esri.arcgisruntime.symbology.UniqueValueRenderer;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -72,17 +72,22 @@ import java.util.ArrayList;
 import java.util.List;
 
 import tanhoa.hcm.ditagis.com.qlcln.adapter.DanhSachDiemDanhGiaAdapter;
+import tanhoa.hcm.ditagis.com.qlcln.libs.Constants;
 import tanhoa.hcm.ditagis.com.qlcln.libs.FeatureLayerDTG;
+import tanhoa.hcm.ditagis.com.qlcln.socket.LocationHelper;
+import tanhoa.hcm.ditagis.com.qlcln.socket.TanHoaApplication;
 import tanhoa.hcm.ditagis.com.qlcln.tools.TraCuu;
 import tanhoa.hcm.ditagis.com.qlcln.utities.Config;
-import tanhoa.hcm.ditagis.com.qlcln.utities.Constant;
 import tanhoa.hcm.ditagis.com.qlcln.utities.ImageFile;
 import tanhoa.hcm.ditagis.com.qlcln.utities.ListConfig;
 import tanhoa.hcm.ditagis.com.qlcln.utities.MapViewHandler;
 import tanhoa.hcm.ditagis.com.qlcln.utities.MySnackBar;
 import tanhoa.hcm.ditagis.com.qlcln.utities.Popup;
 
-public class QuanLyChatLuongNuoc extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, View.OnClickListener {
+public class QuanLyChatLuongNuoc extends AppCompatActivity implements
+        NavigationView.OnNavigationItemSelectedListener, View.OnClickListener,
+        GoogleApiClient.ConnectionCallbacks,
+        GoogleApiClient.OnConnectionFailedListener, ActivityCompat.OnRequestPermissionsResultCallback {
 
     private Uri mUri;
     private Popup popupInfos;
@@ -99,12 +104,14 @@ public class QuanLyChatLuongNuoc extends AppCompatActivity implements Navigation
     private TraCuu traCuu;
 
     private LocationDisplay mLocationDisplay;
-    private int requestCode = 2;
+    private static final int REQUEST_CODE = 2;
     private static final int REQUEST_ID_IMAGE_CAPTURE = 55;
     String[] reqPermissions = new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION};
 
 
     private ServiceFeatureTable table_thoigiancln;
+    private LocationHelper mLocationHelper;
+    private Location mLocation;
 
     @SuppressLint("ClickableViewAccessibility")
     @RequiresApi(api = Build.VERSION_CODES.M)
@@ -112,6 +119,8 @@ public class QuanLyChatLuongNuoc extends AppCompatActivity implements Navigation
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(tanhoa.hcm.ditagis.com.qlcln.R.layout.activity_quan_ly_chat_luong_nuoc);
+        startGPS();
+        startSignIn();
         setLicense();
         setUp();
         //for camera
@@ -128,6 +137,63 @@ public class QuanLyChatLuongNuoc extends AppCompatActivity implements Navigation
         findViewById(R.id.floatBtnLocation).setOnClickListener(this);
         findViewById(R.id.floatBtnHome).setOnClickListener(this);
     }
+
+    private void startGPS() {
+
+        LocationManager locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+
+        mLocationHelper = new LocationHelper(this, new LocationHelper.AsyncResponse() {
+            @Override
+            public void processFinish(double longtitude, double latitude) {
+
+            }
+
+        });
+        mLocationHelper.checkpermission();
+        LocationListener listener = new LocationListener() {
+            @Override
+            public void onLocationChanged(Location location) {
+                mLocation = location;
+                ((TanHoaApplication) QuanLyChatLuongNuoc.this.getApplication()).setmLocation(mLocation);
+            }
+
+            @Override
+            public void onStatusChanged(String s, int i, Bundle bundle) {
+            }
+
+            @Override
+            public void onProviderEnabled(String s) {
+
+            }
+
+            @Override
+            public void onProviderDisabled(String s) {
+//                Intent i = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+//                startActivity(i);
+                mLocationHelper.execute();
+
+                mLocationHelper = new LocationHelper(QuanLyChatLuongNuoc.this, new LocationHelper.AsyncResponse() {
+                    @Override
+                    public void processFinish(double longtitude, double latitude) {
+
+                    }
+
+                });
+                mLocationHelper.checkpermission();
+            }
+        };
+        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            return;
+        }
+        locationManager.requestLocationUpdates("gps", 5000, 0, listener);
+    }
+
+    private void startSignIn() {
+        Intent intent = new Intent(this, LoginActivity.class);
+        startActivityForResult(intent, Constants.REQUEST_LOGIN);
+    }
+
     private void initMapView() {
         mMapView = (MapView) findViewById(R.id.mapView);
         // create an empty map instance
@@ -158,7 +224,7 @@ public class QuanLyChatLuongNuoc extends AppCompatActivity implements Navigation
             mFeatureLayerDTGS.add(featureLayerDTG);
             mMap.getOperationalLayers().add(featureLayer);
         }
-        popupInfos = new Popup(QuanLyChatLuongNuoc.this,mMapView, mFeatureLayerDTGS, mCallout);
+        popupInfos = new Popup(QuanLyChatLuongNuoc.this, mMapView, mFeatureLayerDTGS, mCallout);
 
         mMapViewHandler.setPopupInfos(popupInfos);
         traCuu.setPopupInfos(popupInfos);
@@ -238,7 +304,8 @@ public class QuanLyChatLuongNuoc extends AppCompatActivity implements Navigation
             }
         });
     }
-    private void initListViewSearch(){
+
+    private void initListViewSearch() {
         this.mListViewSearch = findViewById(tanhoa.hcm.ditagis.com.qlcln.R.id.lstview_search);
         //đưa listview search ra phía sau
         this.mListViewSearch.invalidate();
@@ -255,7 +322,8 @@ public class QuanLyChatLuongNuoc extends AppCompatActivity implements Navigation
             }
         });
     }
-    private void setUp(){
+
+    private void setUp() {
         StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();
         StrictMode.setVmPolicy(builder.build());
         Toolbar toolbar = (Toolbar) findViewById(tanhoa.hcm.ditagis.com.qlcln.R.id.toolbar);
@@ -270,6 +338,7 @@ public class QuanLyChatLuongNuoc extends AppCompatActivity implements Navigation
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
     }
+
     private void setLicense() {
         //way 1
         ArcGISRuntimeEnvironment.setLicense(getString(R.string.license));
@@ -295,7 +364,7 @@ public class QuanLyChatLuongNuoc extends AppCompatActivity implements Navigation
 
                 if (!(permissionCheck1 && permissionCheck2)) {
                     // If permissions are not already granted, request permission from the user.
-                    ActivityCompat.requestPermissions(QuanLyChatLuongNuoc.this, reqPermissions, requestCode);
+                    ActivityCompat.requestPermissions(QuanLyChatLuongNuoc.this, reqPermissions, REQUEST_CODE);
                 } else {
                     // Report other unknown failure types to the user - for example, location services may not
                     // be enabled on the device.
@@ -365,7 +434,7 @@ public class QuanLyChatLuongNuoc extends AppCompatActivity implements Navigation
         int id = item.getItemId();
         if (id == R.id.nav_thongke) {
             final Intent intent = new Intent(this, ThongKeActivity.class);
-            this.startActivityForResult(intent, requestCode);
+            this.startActivityForResult(intent, REQUEST_CODE);
         } else if (id == R.id.nav_tracuu) {
 //            final Intent intent = new Intent(this, TraCuuActivity.class);
 //            this.startActivityForResult(intent, 1);
@@ -373,10 +442,9 @@ public class QuanLyChatLuongNuoc extends AppCompatActivity implements Navigation
         } else if (id == R.id.nav_setting) {
             final Intent intent = new Intent(this, SettingsActivity.class);
             this.startActivityForResult(intent, 1);
-        } else if(id == R.id.refresh_setting){
-           initMapView();
-        }
-        else if (id == R.id.nav_logOut) {
+        } else if (id == R.id.refresh_setting) {
+            initMapView();
+        } else if (id == R.id.nav_logOut) {
             this.finish();
         }
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -567,11 +635,21 @@ public class QuanLyChatLuongNuoc extends AppCompatActivity implements Navigation
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         try {
-            String returnedResult = data.getExtras().get(getString(R.string.ket_qua_objectid)).toString();
-            if (resultCode == Activity.RESULT_OK) {
-                mMapViewHandler.queryByObjectID(returnedResult);
+            switch (requestCode) {
+                case REQUEST_CODE:
+                    String returnedResult = data.getExtras().get(getString(R.string.ket_qua_objectid)).toString();
+                    if (resultCode == Activity.RESULT_OK) {
+                        mMapViewHandler.queryByObjectID(returnedResult);
+                    }
+                    break;
+                case Constants.REQUEST_LOGIN:
+                    if (Activity.RESULT_OK != resultCode) {
+                        finish();
+                        return;
+                    }
+
             }
-        } catch (Exception e) {
+        } catch (Exception ignored) {
         }
 
         if (requestCode == REQUEST_ID_IMAGE_CAPTURE)
@@ -603,5 +681,20 @@ public class QuanLyChatLuongNuoc extends AppCompatActivity implements Navigation
                 MySnackBar.make(mMapView, "Lỗi khi chụp ảnh", false);
             }
         }
+    }
+
+    @Override
+    public void onConnected(@Nullable Bundle bundle) {
+
+    }
+
+    @Override
+    public void onConnectionSuspended(int i) {
+
+    }
+
+    @Override
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+
     }
 }
