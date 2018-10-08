@@ -39,7 +39,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
-import tanhoa.hcm.ditagis.com.qlcln.QuanLyChatLuongNuoc;
+import tanhoa.hcm.ditagis.com.qlcln.MainActivity;
 import tanhoa.hcm.ditagis.com.qlcln.R;
 import tanhoa.hcm.ditagis.com.qlcln.adapter.ChiTietMauKiemNghiemAdapter;
 import tanhoa.hcm.ditagis.com.qlcln.adapter.MauKiemNghiemApdapter;
@@ -53,7 +53,7 @@ import tanhoa.hcm.ditagis.com.qlcln.utities.Constant;
  */
 
 public class EditingMauKiemNghiem implements RefreshTableMauKiemNghiemAsync.AsyncResponse {
-    private QuanLyChatLuongNuoc mainActivity;
+    private MainActivity mainActivity;
     private ServiceFeatureTable table_maudanhgia;
     private FeatureLayerDTG featureLayerDTG_MauDanhGia;
     private MauKiemNghiemApdapter mauKiemNghiemApdapter;
@@ -62,7 +62,7 @@ public class EditingMauKiemNghiem implements RefreshTableMauKiemNghiemAsync.Asyn
     private ServiceFeatureTable mServiceFeatureTable;
 
 
-    public EditingMauKiemNghiem(QuanLyChatLuongNuoc mainActivity, FeatureLayerDTG featureLayerDTG_MauDanhGia, ServiceFeatureTable mServiceFeatureTable) {
+    public EditingMauKiemNghiem(MainActivity mainActivity, FeatureLayerDTG featureLayerDTG_MauDanhGia, ServiceFeatureTable mServiceFeatureTable) {
         this.mainActivity = mainActivity;
         this.featureLayerDTG_MauDanhGia = featureLayerDTG_MauDanhGia;
         table_maudanhgia = (ServiceFeatureTable) featureLayerDTG_MauDanhGia.getFeatureLayer().getFeatureTable();

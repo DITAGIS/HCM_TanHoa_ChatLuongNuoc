@@ -1,5 +1,6 @@
 package tanhoa.hcm.ditagis.com.qlcln.async;
 
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.AsyncTask;
@@ -15,6 +16,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 import tanhoa.hcm.ditagis.com.qlcln.R;
+import tanhoa.hcm.ditagis.com.qlcln.entities.DApplication;
 import tanhoa.hcm.ditagis.com.qlcln.entities.entitiesDB.User;
 import tanhoa.hcm.ditagis.com.qlcln.entities.entitiesDB.UserDangNhap;
 import tanhoa.hcm.ditagis.com.qlcln.utities.Constant;
@@ -25,12 +27,14 @@ public class NewLoginAsycn extends AsyncTask<String, Void, User> {
     private ProgressDialog mDialog;
     private Context mContext;
     private AsyncResponse mDelegate;
+    private DApplication mApplication;
 
     public interface AsyncResponse {
         void processFinish(User output);
     }
 
-    public NewLoginAsycn(Context context, AsyncResponse delegate) {
+    public NewLoginAsycn(Activity activity,Context context, AsyncResponse delegate) {
+        this.mApplication = (DApplication) activity.getApplication();
         this.mContext = context;
         this.mDelegate = delegate;
     }
@@ -51,7 +55,7 @@ public class NewLoginAsycn extends AsyncTask<String, Void, User> {
 //        String passEncoded = (new EncodeMD5()).encode(pin + "_DITAGIS");
         // Do some validation here
         String urlParameters = String.format("Username=%s&Password=%s", userName, pin);
-        String urlWithParam = String.format("%s?%s", Constant.getInstance().API_LOGIN, urlParameters);
+        String urlWithParam = String.format("%s?%s",mApplication.getConstant.API_LOGIN, urlParameters);
         try {
 //            + "&apiKey=" + API_KEY
             URL url = new URL(urlWithParam);
@@ -95,7 +99,7 @@ public class NewLoginAsycn extends AsyncTask<String, Void, User> {
     private Boolean checkAccess() {
         boolean isAccess = false;
         try {
-            URL url = new URL(Constant.getInstance().IS_ACCESS);
+            URL url = new URL(mApplication.getConstant.IS_ACCESS);
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             try {
                 conn.setDoOutput(false);
@@ -123,7 +127,7 @@ public class NewLoginAsycn extends AsyncTask<String, Void, User> {
     private String getDisplayName() {
         String displayName = "";
         try {
-            URL url = new URL(Constant.getInstance().DISPLAY_NAME);
+            URL url = new URL(mApplication.getConstant.DISPLAY_NAME);
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             try {
                 conn.setDoOutput(false);

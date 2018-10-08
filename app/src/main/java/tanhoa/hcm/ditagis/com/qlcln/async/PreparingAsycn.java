@@ -1,5 +1,6 @@
 package tanhoa.hcm.ditagis.com.qlcln.async;
 
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.AsyncTask;
@@ -17,6 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import tanhoa.hcm.ditagis.com.qlcln.R;
+import tanhoa.hcm.ditagis.com.qlcln.entities.DApplication;
 import tanhoa.hcm.ditagis.com.qlcln.entities.entitiesDB.LayerInfoDTG;
 import tanhoa.hcm.ditagis.com.qlcln.entities.entitiesDB.ListObjectDB;
 import tanhoa.hcm.ditagis.com.qlcln.utities.Constant;
@@ -27,12 +29,13 @@ public class PreparingAsycn extends AsyncTask<Void, Void, Void> {
     private ProgressDialog mDialog;
     private Context mContext;
     private AsyncResponse mDelegate;
-
+private DApplication mApplication;
     public interface AsyncResponse {
         void processFinish(Void output);
     }
 
-    public PreparingAsycn(Context context, AsyncResponse delegate) {
+    public PreparingAsycn(Activity activity, Context context, AsyncResponse delegate) {
+        this.mApplication = (DApplication) activity.getApplication();
         this.mContext = context;
         this.mDelegate = delegate;
     }
@@ -49,7 +52,7 @@ public class PreparingAsycn extends AsyncTask<Void, Void, Void> {
     @Override
     protected Void doInBackground(Void... params) {
         try {
-            URL url = new URL(Constant.getInstance().LAYER_INFO);
+            URL url = new URL(mApplication.getConstant.LAYER_INFO);
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             try {
                 conn.setDoOutput(false);

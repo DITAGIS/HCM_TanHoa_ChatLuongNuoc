@@ -9,6 +9,10 @@ import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
+import android.location.Geocoder;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -73,18 +77,21 @@ import java.util.List;
 
 import tanhoa.hcm.ditagis.com.qlcln.adapter.DanhSachDiemDanhGiaAdapter;
 import tanhoa.hcm.ditagis.com.qlcln.async.PreparingAsycn;
+import tanhoa.hcm.ditagis.com.qlcln.entities.DApplication;
 import tanhoa.hcm.ditagis.com.qlcln.entities.entitiesDB.LayerInfoDTG;
 import tanhoa.hcm.ditagis.com.qlcln.entities.entitiesDB.ListObjectDB;
 import tanhoa.hcm.ditagis.com.qlcln.libs.Action;
 import tanhoa.hcm.ditagis.com.qlcln.libs.FeatureLayerDTG;
 import tanhoa.hcm.ditagis.com.qlcln.tools.TraCuu;
 import tanhoa.hcm.ditagis.com.qlcln.utities.CheckConnectInternet;
+import tanhoa.hcm.ditagis.com.qlcln.utities.Constant;
 import tanhoa.hcm.ditagis.com.qlcln.utities.ImageFile;
+import tanhoa.hcm.ditagis.com.qlcln.utities.LocationHelper;
 import tanhoa.hcm.ditagis.com.qlcln.utities.MapViewHandler;
 import tanhoa.hcm.ditagis.com.qlcln.utities.MySnackBar;
 import tanhoa.hcm.ditagis.com.qlcln.utities.Popup;
 
-public class QuanLyChatLuongNuoc extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, View.OnClickListener {
+public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, View.OnClickListener {
 
     private Uri mUri;
     private Popup popupInfos;
@@ -101,7 +108,7 @@ public class QuanLyChatLuongNuoc extends AppCompatActivity implements Navigation
     private DanhSachDiemDanhGiaAdapter danhSachDiemDanhGiaAdapter;
     private ArcGISMapImageLayer taiSanImageLayers, hanhChinhImageLayers;
     private LinearLayout mLinnearDisplayLayerTaiSan, mLinnearDisplayLayerBaseMap;
-    private FloatingActionButton mFloatButtonLayer,mFloatButtonLocation;
+    private FloatingActionButton mFloatButtonLayer, mFloatButtonLocation;
     private CheckBox cb_Layer_HanhChinh, cb_Layer_TaiSan;
     private TraCuu traCuu;
     private int states[][];
@@ -112,8 +119,10 @@ public class QuanLyChatLuongNuoc extends AppCompatActivity implements Navigation
     private static final int REQUEST_ID_IMAGE_CAPTURE = 55;
     String[] reqPermissions = new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION};
 
-
+    private LocationHelper mLocationHelper;
     private ServiceFeatureTable table_thoigiancln;
+    private Location mLocation;
+    private DApplication mApplication;
 
     @SuppressLint("ClickableViewAccessibility")
     @RequiresApi(api = Build.VERSION_CODES.M)
@@ -122,14 +131,67 @@ public class QuanLyChatLuongNuoc extends AppCompatActivity implements Navigation
         super.onCreate(savedInstanceState);
         setContentView(tanhoa.hcm.ditagis.com.qlcln.R.layout.activity_quan_ly_chat_luong_nuoc);
         setLicense();
+        mApplication = (DApplication) getApplication();
         setUp();
         initListViewSearch();
 
         initLayerListView();
-        initMapView();
 
 
         setOnClickListener();
+        startGPS();
+        startSignIn();
+    }
+
+    private void startGPS() {
+
+        LocationManager locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+
+        mLocationHelper = new LocationHelper(this, (longtitude, latitude) -> {
+
+        });
+        mLocationHelper.checkpermission();
+        LocationListener listener = new LocationListener() {
+            @Override
+            public void onLocationChanged(Location location) {
+                mLocation = location;
+                mApplication.setmLocation(mLocation);
+            }
+
+            @Override
+            public void onStatusChanged(String s, int i, Bundle bundle) {
+            }
+
+            @Override
+            public void onProviderEnabled(String s) {
+
+            }
+
+            @Override
+            public void onProviderDisabled(String s) {
+//                Intent i = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+//                startActivity(i);
+                mLocationHelper.execute();
+
+                mLocationHelper = new LocationHelper(MainActivity.this, (longtitude, latitude) -> {
+
+                });
+                mLocationHelper.checkpermission();
+            }
+        };
+        if (ActivityCompat.checkSelfPermission(this,
+                android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+            return;
+        }
+        assert locationManager != null;
+        locationManager.requestLocationUpdates("gps", 5000, 0, listener);
+    }
+
+    private void startSignIn() {
+        Intent intent = new Intent(this, LoginActivity.class);
+        startActivityForResult(intent, Constant.REQUEST_LOGIN);
     }
 
     private void setOnClickListener() {
@@ -150,7 +212,7 @@ public class QuanLyChatLuongNuoc extends AppCompatActivity implements Navigation
         //đưa listview search ra phía sau
         this.mListViewSearch.invalidate();
         List<DanhSachDiemDanhGiaAdapter.Item> items = new ArrayList<>();
-        this.danhSachDiemDanhGiaAdapter = new DanhSachDiemDanhGiaAdapter(QuanLyChatLuongNuoc.this, items);
+        this.danhSachDiemDanhGiaAdapter = new DanhSachDiemDanhGiaAdapter(MainActivity.this, items);
         this.mListViewSearch.setAdapter(danhSachDiemDanhGiaAdapter);
         this.mListViewSearch.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -188,12 +250,9 @@ public class QuanLyChatLuongNuoc extends AppCompatActivity implements Navigation
         mMap = new ArcGISMap(Basemap.Type.OPEN_STREET_MAP, LATITUDE, LONGTITUDE, LEVEL_OF_DETAIL);
         mMapView.setMap(mMap);
         mCallout = mMapView.getCallout();
-        final PreparingAsycn preparingAsycn = new PreparingAsycn(this, new PreparingAsycn.AsyncResponse() {
-            @Override
-            public void processFinish(Void output) {
-                ListObjectDB.getInstance().getLstFeatureLayerDTG();
-                setFeatureService();
-            }
+        final PreparingAsycn preparingAsycn = new PreparingAsycn(this,this, output -> {
+            ListObjectDB.getInstance().getLstFeatureLayerDTG();
+            setFeatureService();
         });
         if (CheckConnectInternet.isOnline(this))
             preparingAsycn.execute();
@@ -240,6 +299,7 @@ public class QuanLyChatLuongNuoc extends AppCompatActivity implements Navigation
         });
 
     }
+
     private void initLayerListView() {
         findViewById(R.id.layout_layer_open_street_map).setOnClickListener(this);
         findViewById(R.id.layout_layer_street_map).setOnClickListener(this);
@@ -303,8 +363,8 @@ public class QuanLyChatLuongNuoc extends AppCompatActivity implements Navigation
             featureLayerDTG.setUpdateFields(getFieldsDTG(layerInfoDTG.getOutField()));
             if (layerInfoDTG.getId() != null && layerInfoDTG.getId().equals(getString(tanhoa.hcm.ditagis.com.qlcln.R.string.id_diemdanhgianuoc))) {
                 featureLayer.setPopupEnabled(true);
-                mMapViewHandler = new MapViewHandler(featureLayerDTG, mMapView, QuanLyChatLuongNuoc.this);
-                traCuu = new TraCuu(featureLayerDTG, QuanLyChatLuongNuoc.this);
+                mMapViewHandler = new MapViewHandler(featureLayerDTG, mMapView, MainActivity.this);
+                traCuu = new TraCuu(featureLayerDTG, MainActivity.this);
                 mFeatureLayerDTGS.add(featureLayerDTG);
                 mMap.getOperationalLayers().add(featureLayer);
             }
@@ -319,14 +379,13 @@ public class QuanLyChatLuongNuoc extends AppCompatActivity implements Navigation
                     if (hanhChinhImageLayers.getLoadStatus() == LoadStatus.LOADED) {
                         ListenableList<ArcGISSublayer> sublayerList = hanhChinhImageLayers.getSublayers();
                         for (ArcGISSublayer sublayer : sublayerList) {
-                            addCheckBox_SubLayer((ArcGISMapImageSublayer) sublayer,mLinnearDisplayLayerBaseMap);
+                            addCheckBox_SubLayer((ArcGISMapImageSublayer) sublayer, mLinnearDisplayLayerBaseMap);
                         }
                     }
                 });
                 hanhChinhImageLayers.loadAsync();
 
-            }
-            else if (taiSanImageLayers == null && layerInfoDTG.getId().equals("truhongLYR")){
+            } else if (taiSanImageLayers == null && layerInfoDTG.getId().equals("truhongLYR")) {
                 taiSanImageLayers = new ArcGISMapImageLayer(url.replaceFirst("FeatureServer(.*)", "MapServer"));
                 taiSanImageLayers.setName(layerInfoDTG.getTitleLayer());
                 taiSanImageLayers.setId(layerInfoDTG.getId());
@@ -337,7 +396,7 @@ public class QuanLyChatLuongNuoc extends AppCompatActivity implements Navigation
                     if (taiSanImageLayers.getLoadStatus() == LoadStatus.LOADED) {
                         ListenableList<ArcGISSublayer> sublayerList = taiSanImageLayers.getSublayers();
                         for (ArcGISSublayer sublayer : sublayerList) {
-                            addCheckBox_SubLayer((ArcGISMapImageSublayer) sublayer,mLinnearDisplayLayerTaiSan);
+                            addCheckBox_SubLayer((ArcGISMapImageSublayer) sublayer, mLinnearDisplayLayerTaiSan);
                         }
                     }
                 });
@@ -350,7 +409,7 @@ public class QuanLyChatLuongNuoc extends AppCompatActivity implements Navigation
             MySnackBar.make(mMapView, getString(tanhoa.hcm.ditagis.com.qlcln.R.string.no_access_permissions), true);
             return;
         }
-        popupInfos = new Popup(QuanLyChatLuongNuoc.this, mMapView, mFeatureLayerDTGS, mCallout);
+        popupInfos = new Popup(MainActivity.this, mMapView, mFeatureLayerDTGS, mCallout);
 
         mMapViewHandler.setPopupInfos(popupInfos);
         traCuu.setPopupInfos(popupInfos);
@@ -394,7 +453,8 @@ public class QuanLyChatLuongNuoc extends AppCompatActivity implements Navigation
             }
         });
     }
-    private void addCheckBox_SubLayer(final ArcGISMapImageSublayer layer,LinearLayout linearLayout) {
+
+    private void addCheckBox_SubLayer(final ArcGISMapImageSublayer layer, LinearLayout linearLayout) {
         final CheckBox checkBox = new CheckBox(linearLayout.getContext());
         checkBox.setText(layer.getName());
         checkBox.setChecked(false);
@@ -418,6 +478,7 @@ public class QuanLyChatLuongNuoc extends AppCompatActivity implements Navigation
         });
         linearLayout.addView(checkBox);
     }
+
     private String[] getFieldsDTG(String stringFields) {
         String[] returnFields = null;
         if (stringFields != null) {
@@ -451,18 +512,18 @@ public class QuanLyChatLuongNuoc extends AppCompatActivity implements Navigation
 
                 // If an error is found, handle the failure to start.
                 // Check permissions to see if failure may be due to lack of permissions.
-                boolean permissionCheck1 = ContextCompat.checkSelfPermission(QuanLyChatLuongNuoc.this, reqPermissions[0]) == PackageManager.PERMISSION_GRANTED;
-                boolean permissionCheck2 = ContextCompat.checkSelfPermission(QuanLyChatLuongNuoc.this, reqPermissions[1]) == PackageManager.PERMISSION_GRANTED;
+                boolean permissionCheck1 = ContextCompat.checkSelfPermission(MainActivity.this, reqPermissions[0]) == PackageManager.PERMISSION_GRANTED;
+                boolean permissionCheck2 = ContextCompat.checkSelfPermission(MainActivity.this, reqPermissions[1]) == PackageManager.PERMISSION_GRANTED;
 
                 if (!(permissionCheck1 && permissionCheck2)) {
                     // If permissions are not already granted, request permission from the user.
-                    ActivityCompat.requestPermissions(QuanLyChatLuongNuoc.this, reqPermissions, requestCode);
+                    ActivityCompat.requestPermissions(MainActivity.this, reqPermissions, requestCode);
                 } else {
                     // Report other unknown failure types to the user - for example, location services may not
                     // be enabled on the device.
 //                    String message = String.format("Error in DataSourceStatusChangedListener: %s", dataSourceStatusChangedEvent
 //                            .getSource().getLocationDataSource().getError().getMessage());
-//                    Toast.makeText(QuanLyChatLuongNuoc.this, message, Toast.LENGTH_LONG).show();
+//                    Toast.makeText(MainActivity.this, message, Toast.LENGTH_LONG).show();
                 }
             }
         });
@@ -512,7 +573,7 @@ public class QuanLyChatLuongNuoc extends AppCompatActivity implements Navigation
 
         //noinspection SimplifiableIfStatement
         if (id == tanhoa.hcm.ditagis.com.qlcln.R.id.action_search) {
-            QuanLyChatLuongNuoc.this.mListViewSearch.setVisibility(View.VISIBLE);
+            MainActivity.this.mListViewSearch.setVisibility(View.VISIBLE);
             return true;
         }
 
@@ -532,9 +593,9 @@ public class QuanLyChatLuongNuoc extends AppCompatActivity implements Navigation
 //            this.startActivityForResult(intent, 1);
             traCuu.start();
         } else if (id == tanhoa.hcm.ditagis.com.qlcln.R.id.nav_logOut) {
-            this.finish();
+           startSignIn();
         }
-        DrawerLayout drawer = (DrawerLayout) findViewById(tanhoa.hcm.ditagis.com.qlcln.R.id.drawer_layout);
+        DrawerLayout drawer =  findViewById(tanhoa.hcm.ditagis.com.qlcln.R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
@@ -557,7 +618,7 @@ public class QuanLyChatLuongNuoc extends AppCompatActivity implements Navigation
             mLocationDisplay.startAsync();
 
         } else {
-            Toast.makeText(QuanLyChatLuongNuoc.this, getResources().getString(tanhoa.hcm.ditagis.com.qlcln.R.string.location_permission_denied), Toast.LENGTH_SHORT).show();
+            Toast.makeText(MainActivity.this, getResources().getString(tanhoa.hcm.ditagis.com.qlcln.R.string.location_permission_denied), Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -724,33 +785,42 @@ public class QuanLyChatLuongNuoc extends AppCompatActivity implements Navigation
         } catch (Exception e) {
         }
 
-        if (requestCode == REQUEST_ID_IMAGE_CAPTURE)
-        {
-            if (resultCode == RESULT_OK) {
-                if (this.mUri != null) {
+        switch (requestCode) {
+            case REQUEST_ID_IMAGE_CAPTURE:
+                if (resultCode == RESULT_OK) {
+                    if (this.mUri != null) {
 //                    Uri selectedImage = this.mUri;
 //                    getContentResolver().notifyChange(selectedImage, null);
-                    Bitmap bitmap = getBitmap(mUri.getPath());
-                    try {
-                        if (bitmap != null) {
-                            Matrix matrix = new Matrix();
-                            matrix.postRotate(90);
-                            Bitmap rotatedBitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
-                            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-                            rotatedBitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream);
-                            byte[] image = outputStream.toByteArray();
-                            Toast.makeText(this, "Đã lưu ảnh", Toast.LENGTH_SHORT).show();
-                            mMapViewHandler.addFeature(image);
-                            //Todo xóa ảnh
+                        Bitmap bitmap = getBitmap(mUri.getPath());
+                        try {
+                            if (bitmap != null) {
+                                Matrix matrix = new Matrix();
+                                matrix.postRotate(90);
+                                Bitmap rotatedBitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
+                                ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+                                rotatedBitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream);
+                                byte[] image = outputStream.toByteArray();
+                                Toast.makeText(this, "Đã lưu ảnh", Toast.LENGTH_SHORT).show();
+                                mMapViewHandler.addFeature(image);
+                                //Todo xóa ảnh
+                            }
+                        } catch (Exception e) {
                         }
-                    } catch (Exception e) {
                     }
+                } else if (resultCode == RESULT_CANCELED) {
+                    MySnackBar.make(mMapView, "Hủy chụp ảnh", false);
+                } else {
+                    MySnackBar.make(mMapView, "Lỗi khi chụp ảnh", false);
                 }
-            } else if (resultCode == RESULT_CANCELED) {
-                MySnackBar.make(mMapView, "Hủy chụp ảnh", false);
-            } else {
-                MySnackBar.make(mMapView, "Lỗi khi chụp ảnh", false);
-            }
+                break;
+            case Constant.REQUEST_LOGIN:
+                if (Activity.RESULT_OK != resultCode) {
+                    finish();
+                    return;
+                } else {
+                  initMapView();
+                }
+                break;
         }
     }
 }

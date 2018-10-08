@@ -2,15 +2,21 @@ package tanhoa.hcm.ditagis.com.qlcln;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import io.socket.client.Socket;
+import io.socket.emitter.Emitter;
 import tanhoa.hcm.ditagis.com.qlcln.async.NewLoginAsycn;
+import tanhoa.hcm.ditagis.com.qlcln.entities.DApplication;
 import tanhoa.hcm.ditagis.com.qlcln.entities.entitiesDB.User;
 import tanhoa.hcm.ditagis.com.qlcln.utities.CheckConnectInternet;
+import tanhoa.hcm.ditagis.com.qlcln.utities.Constant;
 import tanhoa.hcm.ditagis.com.qlcln.utities.Preference;
 
 
@@ -19,6 +25,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     private TextView mTxtPassword;
     private boolean isLastLogin;
     private TextView mTxtValidation;
+    private Socket mSocket;
+    private DApplication mApplication;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,8 +42,15 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 //        mTxtUsername.setText("cln");
 //        mTxtPassword.setText("ditagis@123");
         mTxtValidation = findViewById(tanhoa.hcm.ditagis.com.qlcln.R.id.txt_login_validation);
+        mApplication = (DApplication) getApplication();
         create();
     }
+
+    private Emitter.Listener onInfinity = args -> {
+        if (args != null && args.length > 0) {
+            Log.d("Nhận", args[0].toString());
+        }
+    };
 
     private void create() {
         Preference.getInstance().setContext(this);
@@ -78,7 +93,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         }
 //        handleLoginSuccess(userName,passWord);
         final String finalUserName = userName;
-        NewLoginAsycn loginAsycn = new NewLoginAsycn(this, new NewLoginAsycn.AsyncResponse() {
+        NewLoginAsycn loginAsycn = new NewLoginAsycn(this,this, new NewLoginAsycn.AsyncResponse() {
 
             @Override
             public void processFinish(User output) {
@@ -102,16 +117,40 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     }
 
     private void handleLoginSuccess(User user) {
+        mSocket = mApplication.getSocket();
+        final Handler handler = new Handler();
+        final int delay = 5000; //milliseconds
+        handler.postDelayed(new Runnable() {
+            public void run() {
+                //do something
+                if (mApplication.getmLocation() != null) {
+                    Log.d("gửi", "hhi");
+                    if (mApplication.getUserDangNhap() != null &&
+                            mApplication.getUserDangNhap().getUserName() != null)
+                        mSocket.emit(Constant.EVENT_STAFF_NAME, Constant.APP_ID + "," + mApplication.getUserDangNhap().getUserName());
+                    Emitter emit1 = mSocket.emit(Constant.EVENT_LOCATION,
+                            mApplication.getmLocation().getLatitude() + "," + mApplication.getmLocation().getLongitude());
+                    mApplication.setmLocation(null);
+                    Log.d("Kết quả vị trí", emit1.hasListeners(Constant.EVENT_LOCATION) + "");
+                }
+                handler.postDelayed(this, delay);
+            }
+        }, delay);
+        mSocket.on(Constant.EVENT_STAFF_NAME, onInfinity);
+        mSocket.on(Constant.EVENT_LOCATION, onInfinity);
+
+        mSocket.connect();
 
 
-        Preference.getInstance().savePreferences(getString(tanhoa.hcm.ditagis.com.qlcln.R.string.preference_username),user.getUserName());
+        Preference.getInstance().savePreferences(getString(tanhoa.hcm.ditagis.com.qlcln.R.string.preference_username), user.getUserName());
         Preference.getInstance().savePreferences(getString(tanhoa.hcm.ditagis.com.qlcln.R.string.preference_password), user.getPassWord());
         Preference.getInstance().savePreferences(getString(tanhoa.hcm.ditagis.com.qlcln.R.string.preference_displayname), user.getDisplayName());
         mTxtUsername.setText("");
         mTxtPassword.setText("");
-    Intent intent = new Intent(this, QuanLyChatLuongNuoc.class);
 
-        startActivity(intent);
+        Intent intent = new Intent();
+        setResult(RESULT_OK, intent);
+        finish();
     }
 
     private void changeAccount() {
