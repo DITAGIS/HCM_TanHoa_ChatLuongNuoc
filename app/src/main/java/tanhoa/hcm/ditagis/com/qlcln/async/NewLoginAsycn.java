@@ -19,7 +19,6 @@ import tanhoa.hcm.ditagis.com.qlcln.R;
 import tanhoa.hcm.ditagis.com.qlcln.entities.DApplication;
 import tanhoa.hcm.ditagis.com.qlcln.entities.entitiesDB.User;
 import tanhoa.hcm.ditagis.com.qlcln.entities.entitiesDB.UserDangNhap;
-import tanhoa.hcm.ditagis.com.qlcln.utities.Constant;
 import tanhoa.hcm.ditagis.com.qlcln.utities.Preference;
 
 public class NewLoginAsycn extends AsyncTask<String, Void, User> {
@@ -33,7 +32,7 @@ public class NewLoginAsycn extends AsyncTask<String, Void, User> {
         void processFinish(User output);
     }
 
-    public NewLoginAsycn(Activity activity,Context context, AsyncResponse delegate) {
+    public NewLoginAsycn(Activity activity, Context context, AsyncResponse delegate) {
         this.mApplication = (DApplication) activity.getApplication();
         this.mContext = context;
         this.mDelegate = delegate;
@@ -55,32 +54,30 @@ public class NewLoginAsycn extends AsyncTask<String, Void, User> {
 //        String passEncoded = (new EncodeMD5()).encode(pin + "_DITAGIS");
         // Do some validation here
         String urlParameters = String.format("Username=%s&Password=%s", userName, pin);
-        String urlWithParam = String.format("%s?%s",mApplication.getConstant.API_LOGIN, urlParameters);
+        String urlWithParam = String.format("%s?%s", mApplication.getConstant.API_LOGIN, urlParameters);
         try {
 //            + "&apiKey=" + API_KEY
             URL url = new URL(urlWithParam);
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-            try {
-                conn.setRequestMethod("GET");
-                conn.connect();
-                BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-                StringBuilder stringBuilder = new StringBuilder();
-                String line;
-                while ((line = bufferedReader.readLine()) != null) {
-                    stringBuilder.append(line);
-                    break;
-                }
-                Preference.getInstance().savePreferences(mContext.getString(R.string.preference_login_api), stringBuilder.toString().replace("\"", ""));
-                bufferedReader.close();
-                if (checkAccess()) {
-                    UserDangNhap.getInstance().setUser(new User());
-                    UserDangNhap.getInstance().getUser().setDisplayName(getDisplayName());
-                }
-            } catch (Exception e) {
-                Log.e("Lỗi login", e.toString());
-            } finally {
+            conn.setRequestMethod("GET");
+            conn.connect();
+            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+            StringBuilder stringBuilder = new StringBuilder();
+            String line;
+            while ((line = bufferedReader.readLine()) != null) {
+                stringBuilder.append(line);
+                break;
+            }
+            Preference.getInstance().savePreferences(mContext.getString(R.string.preference_login_api), stringBuilder.toString().replace("\"", ""));
+            bufferedReader.close();
+            if (checkAccess()) {
+                UserDangNhap.getInstance().setUser(new User());
+                UserDangNhap.getInstance().getUser().setDisplayName(getDisplayName());
                 conn.disconnect();
                 return UserDangNhap.getInstance().getUser();
+            } else {
+                conn.disconnect();
+                return null;
             }
         } catch (Exception e) {
             Log.e("ERROR", e.getMessage(), e);
