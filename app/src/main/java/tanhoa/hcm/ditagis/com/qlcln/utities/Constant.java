@@ -23,8 +23,8 @@ public class Constant {
     public static final String EVENT_GIAO_VIEC = "giaoviecsuco";
     public static final String APP_ID = "qlcln";
     public static final int REQUEST_LOGIN = 0;
-    //    public static final String SERVER_API = "http://gis.capnuoccholon.com.vn/cholon/api";
-    private final String SERVER_API = "http://sawagis.vn/tanhoa1/api";
+//    private final String SERVER_API = "http://sawagis.vn/tanhoa1/api";
+    private final String SERVER_API = "http://113.161.88.180:798/apiv1/api";
     public String API_LOGIN;
 
     {
