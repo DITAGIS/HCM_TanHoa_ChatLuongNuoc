@@ -9,6 +9,11 @@ import tanhoa.hcm.ditagis.com.qlcln.adapter.SettingsAdapter;
  */
 
 public class Constant {
+    public static final String CHAT_SERVER_URL = "http://sawagis.vn:3000";
+    public static final String EVENT_LOCATION = "vitrinhanvien";
+    public static final String EVENT_STAFF_NAME = "tennhanvien";
+    public static final String EVENT_GIAO_VIEC = "giaoviecsuco";
+    public static final String APP_ID = "qlcln";
     public static final SimpleDateFormat DATE_TIME_FORMAT = new SimpleDateFormat("dd-MM-yyyy HH:mm:SS");
     public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy");
     public static final SimpleDateFormat DDMMYYYY = new SimpleDateFormat("ddMMyyyy");
@@ -18,31 +23,13 @@ public class Constant {
     public static final String IDMAUKIEMNGHIEM = "IDMauKiemNghiem";
     public static final String DIACHI = "DiaChi";
     public static final String NGAY_CAP_NHAT = "NgayCapNhat";
-    //    public static final String SERVER_API = "http://gis.capnuoccholon.com.vn/cholon/api";
-    private final String SERVER_API = "http://sawagis.vn/tanhoa1/api";
-    public String API_LOGIN;
-
-    {
-        API_LOGIN = SERVER_API + "/Login";
-    }
-
-    public String DISPLAY_NAME;
-
-    {
-        DISPLAY_NAME = SERVER_API + "/Account/Profile";
-    }
-
-    public String LAYER_INFO;
-
-    {
-        LAYER_INFO = SERVER_API + "/Account/LayerInfo";
-    }
-
-
-    public String IS_ACCESS;
-
-    {
-        IS_ACCESS = SERVER_API + "/Account/IsAccess/m_qlcln";
+    //    private final String SERVER_API = "http://sawagis.vn/tanhoa1/api";
+    private static final String SERVER_API = "http://113.161.88.180:798/apiv1/api";
+    public static class API_URL{
+        public static final String LOGIN = SERVER_API + "/Login";
+        public static final String   DISPLAY_NAME = SERVER_API + "/Account/Profile";
+        public static final String   LAYER_INFO = SERVER_API + "/Account/LayerInfo";
+        public static final String     IS_ACCESS = SERVER_API + "/Account/IsAccess/m_qlcln";
     }
 
     private static Constant mInstance = null;

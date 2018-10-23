@@ -287,7 +287,7 @@ public class MapViewHandler extends Activity {
                         } else {
                             mSelectedArcGISFeature = null;
                         }
-                        publishProgress(null);
+                        publishProgress();
                     } catch (Exception e) {
                         Log.e(mContext.getResources().getString(R.string.app_name), "Select feature failed: " + e.getMessage());
                     }

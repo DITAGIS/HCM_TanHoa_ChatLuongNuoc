@@ -31,8 +31,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
         mTxtUsername = findViewById(tanhoa.hcm.ditagis.com.qlcln.R.id.txtUsername);
         mTxtPassword = findViewById(tanhoa.hcm.ditagis.com.qlcln.R.id.txtPassword);
-//        mTxtUsername.setText("cln");
-//        mTxtPassword.setText("ditagis@123");
+        mTxtUsername.setText("cln");
+        mTxtPassword.setText("ditagis@123");
         mTxtValidation = findViewById(tanhoa.hcm.ditagis.com.qlcln.R.id.txt_login_validation);
         create();
     }
@@ -78,15 +78,11 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         }
 //        handleLoginSuccess(userName,passWord);
         final String finalUserName = userName;
-        NewLoginAsycn loginAsycn = new NewLoginAsycn(this, new NewLoginAsycn.AsyncResponse() {
-
-            @Override
-            public void processFinish(User output) {
-                if (output != null)
-                    handleLoginSuccess(output);
-                else
-                    handleLoginFail();
-            }
+        NewLoginAsycn loginAsycn = new NewLoginAsycn(this, output -> {
+            if (output != null)
+                handleLoginSuccess(output);
+            else
+                handleLoginFail();
         });
         loginAsycn.execute(userName, passWord);
     }

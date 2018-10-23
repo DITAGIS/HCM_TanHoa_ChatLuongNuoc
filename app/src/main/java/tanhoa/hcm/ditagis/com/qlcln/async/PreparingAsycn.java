@@ -49,7 +49,7 @@ public class PreparingAsycn extends AsyncTask<Void, Void, Void> {
     @Override
     protected Void doInBackground(Void... params) {
         try {
-            URL url = new URL(Constant.getInstance().LAYER_INFO);
+            URL url = new URL(Constant.API_URL.LAYER_INFO);
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             try {
                 conn.setDoOutput(false);
