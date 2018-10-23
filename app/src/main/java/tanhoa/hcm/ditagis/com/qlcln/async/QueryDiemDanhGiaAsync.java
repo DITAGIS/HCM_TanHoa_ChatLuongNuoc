@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
-import tanhoa.hcm.ditagis.com.qlcln.QuanLyChatLuongNuoc;
+import tanhoa.hcm.ditagis.com.qlcln.MainActivity;
 import tanhoa.hcm.ditagis.com.qlcln.R;
 import tanhoa.hcm.ditagis.com.qlcln.ThongKeActivity;
 import tanhoa.hcm.ditagis.com.qlcln.adapter.DanhSachDiemDanhGiaAdapter;
@@ -44,7 +44,7 @@ public class QueryDiemDanhGiaAsync extends AsyncTask<String, List<DanhSachDiemDa
         dialog = new ProgressDialog(thongKeActivity, android.R.style.Theme_Material_Dialog_Alert);
     }
 
-    public QueryDiemDanhGiaAsync(QuanLyChatLuongNuoc mainActivity, ServiceFeatureTable serviceFeatureTable, TextView txtTongItem, DanhSachDiemDanhGiaAdapter adapter, AsyncResponse asyncResponse) {
+    public QueryDiemDanhGiaAsync(MainActivity mainActivity, ServiceFeatureTable serviceFeatureTable, TextView txtTongItem, DanhSachDiemDanhGiaAdapter adapter, AsyncResponse asyncResponse) {
         this.delegate = asyncResponse;
         mContext = mainActivity;
         this.serviceFeatureTable = serviceFeatureTable;

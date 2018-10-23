@@ -34,7 +34,7 @@ import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.TimeZone;
 
-import tanhoa.hcm.ditagis.com.qlcln.QuanLyChatLuongNuoc;
+import tanhoa.hcm.ditagis.com.qlcln.MainActivity;
 import tanhoa.hcm.ditagis.com.qlcln.R;
 import tanhoa.hcm.ditagis.com.qlcln.adapter.DanhSachDiemDanhGiaAdapter;
 import tanhoa.hcm.ditagis.com.qlcln.adapter.TraCuuChiTietDiemDanhGiaAdapter;
@@ -49,14 +49,14 @@ import tanhoa.hcm.ditagis.com.qlcln.utities.Popup;
 
 public class TraCuu {
     private ServiceFeatureTable serviceFeatureTable;
-    private QuanLyChatLuongNuoc mainActivity;
+    private MainActivity mainActivity;
     private FeatureLayerDTG featureLayerDTG;
     private TraCuuChiTietDiemDanhGiaAdapter traCuuChiTietDiemDanhGiaAdapter;
     private List<Feature> table_feature;
     private Popup popupInfos;
 
 
-    public TraCuu(FeatureLayerDTG featureLayerDTG, QuanLyChatLuongNuoc mainActivity) {
+    public TraCuu(FeatureLayerDTG featureLayerDTG, MainActivity mainActivity) {
         this.featureLayerDTG = featureLayerDTG;
         serviceFeatureTable = (ServiceFeatureTable) featureLayerDTG.getFeatureLayer().getFeatureTable();
         this.mainActivity = mainActivity;

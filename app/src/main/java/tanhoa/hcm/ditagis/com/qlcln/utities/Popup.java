@@ -49,7 +49,7 @@ import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 import tanhoa.hcm.ditagis.com.qlcln.Editing.EditingMauKiemNghiem;
-import tanhoa.hcm.ditagis.com.qlcln.QuanLyChatLuongNuoc;
+import tanhoa.hcm.ditagis.com.qlcln.MainActivity;
 import tanhoa.hcm.ditagis.com.qlcln.R;
 import tanhoa.hcm.ditagis.com.qlcln.adapter.FeatureViewMoreInfoAdapter;
 import tanhoa.hcm.ditagis.com.qlcln.async.EditAsync;
@@ -57,7 +57,7 @@ import tanhoa.hcm.ditagis.com.qlcln.async.NotifyDataSetChangeAsync;
 import tanhoa.hcm.ditagis.com.qlcln.libs.FeatureLayerDTG;
 
 public class Popup extends AppCompatActivity implements View.OnClickListener {
-    private QuanLyChatLuongNuoc mainActivity;
+    private MainActivity mainActivity;
     private ArcGISFeature mSelectedArcGISFeature = null;
     private ServiceFeatureTable mServiceFeatureTable;
     private Callout mCallout;
@@ -71,7 +71,7 @@ public class Popup extends AppCompatActivity implements View.OnClickListener {
     private SimpleDateFormat format_yearfirst = new SimpleDateFormat("yyyy/MM/dd ");
     private static double DELTA_MOVE_Y = 0;//7000;
 
-    public Popup(QuanLyChatLuongNuoc mainActivity, MapView mMapView, List<FeatureLayerDTG> layerDTGS, Callout callout) {
+    public Popup(MainActivity mainActivity, MapView mMapView, List<FeatureLayerDTG> layerDTGS, Callout callout) {
         this.mainActivity = mainActivity;
         this.mServiceFeatureTable = getServiceFeatureTable(layerDTGS, mainActivity.getResources().getString(R.string.id_diemdanhgianuoc));
         this.mCallout = callout;
