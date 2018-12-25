@@ -158,6 +158,7 @@ public class EditingMauKiemNghiem implements RefreshTableMauKiemNghiemAsync.Asyn
         final List<ChiTietMauKiemNghiemAdapter.Item> items = new ArrayList<>();
         List<Field> fields = table_maudanhgia.getFields();
         final String[] updateFields = featureLayerDTG_MauDanhGia.getUpdateFields();
+        String[] unedit_Fields = mainActivity.getResources().getStringArray(R.array.unedit_Fields);
         for (Field field : fields) {
             ChiTietMauKiemNghiemAdapter.Item item = new ChiTietMauKiemNghiemAdapter.Item();
             item.setAlias(field.getAlias());
@@ -179,13 +180,22 @@ public class EditingMauKiemNghiem implements RefreshTableMauKiemNghiemAsync.Asyn
                 }
             }
             if (this.featureLayerDTG_MauDanhGia.getAction().isEdit()) {
-                for (String updateField : updateFields) {
-                    if (updateField.equals("*")) {
+                if (updateFields.length > 0) {
+                    if (updateFields[0].equals("*") || updateFields[0].equals("")) {
                         item.setEdit(true);
-                        break;
+                    } else {
+                        for (String updateField : updateFields) {
+                            if (item.getFieldName().equals(updateField)) {
+                                item.setEdit(true);
+                                break;
+                            }
+                        }
                     }
-                    if (field.getName().equals(updateField)) {
-                        item.setEdit(true);
+                }
+                for (String unedit_Field : unedit_Fields) {
+                    if (unedit_Field.toUpperCase().equals(item.getFieldName().toUpperCase())) {
+                        item.setEdit(false);
+                        break;
                     }
                 }
             }
@@ -370,15 +380,29 @@ public class EditingMauKiemNghiem implements RefreshTableMauKiemNghiemAsync.Asyn
         });
         List<Field> fields = table_maudanhgia.getFields();
         String[] updateFields = featureLayerDTG_MauDanhGia.getUpdateFields();
+        String[] unedit_Fields = mainActivity.getResources().getStringArray(R.array.unedit_Fields);
         for (Field field : fields) {
             if (!field.getName().equals(Constant.OBJECTID)) {
                 ChiTietMauKiemNghiemAdapter.Item item = new ChiTietMauKiemNghiemAdapter.Item();
                 item.setAlias(field.getAlias());
                 item.setFieldName(field.getName());
                 item.setFieldType(field.getFieldType());
-                for (String updateField : updateFields) {
-                    if (field.getName().equals(updateField)) {
+                if (updateFields.length > 0) {
+                    if (updateFields[0].equals("*") || updateFields[0].equals("")) {
                         item.setEdit(true);
+                    } else {
+                        for (String updateField : updateFields) {
+                            if (item.getFieldName().equals(updateField)) {
+                                item.setEdit(true);
+                                break;
+                            }
+                        }
+                    }
+                }
+                for (String unedit_Field : unedit_Fields) {
+                    if (unedit_Field.toUpperCase().equals(item.getFieldName().toUpperCase())) {
+                        item.setEdit(false);
+                        break;
                     }
                 }
                 if (field.getName().equals(mainActivity.getString(R.string.IDDIEMDANHGIA))) {

@@ -135,4 +135,10 @@
         <item>NgayCapNhat</item>
         <item>GhiChu</item>
     </string-array>
+    <string-array name="unedit_Fields">
+        <item>OBJECTID</item>
+        <item>IDDiemDanhGia</item>
+        <item>IDMauKiemNghiem</item>
+        <item>NgayCapNhat</item>
+    </string-array>
 </resources>

@@ -31,8 +31,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
         mTxtUsername = findViewById(tanhoa.hcm.ditagis.com.qlcln.R.id.txtUsername);
         mTxtPassword = findViewById(tanhoa.hcm.ditagis.com.qlcln.R.id.txtPassword);
-        mTxtUsername.setText("cln");
-        mTxtPassword.setText("ditagis@123");
+//        mTxtUsername.setText("cln");
+//        mTxtPassword.setText("ditagis@123");
         mTxtValidation = findViewById(tanhoa.hcm.ditagis.com.qlcln.R.id.txt_login_validation);
         create();
     }
@@ -105,9 +105,9 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         Preference.getInstance().savePreferences(getString(tanhoa.hcm.ditagis.com.qlcln.R.string.preference_displayname), user.getDisplayName());
         mTxtUsername.setText("");
         mTxtPassword.setText("");
-    Intent intent = new Intent(this, QuanLyChatLuongNuoc.class);
-
-        startActivity(intent);
+        Intent intent = new Intent();
+        setResult(RESULT_OK, intent);
+        finish();
     }
 
     private void changeAccount() {

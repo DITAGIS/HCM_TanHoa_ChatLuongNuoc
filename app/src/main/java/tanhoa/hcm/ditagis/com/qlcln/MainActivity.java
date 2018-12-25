@@ -150,7 +150,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         mLocationHelper = new LocationHelper(this, (longtitude, latitude) -> {
 
         });
-        mLocationHelper.checkpermission();
+        if (!mLocationHelper.checkPlayServices()) {
+            mLocationHelper.buildGoogleApiClient();
+        }
         LocationListener listener = new LocationListener() {
             @Override
             public void onLocationChanged(Location location) {
@@ -171,12 +173,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             public void onProviderDisabled(String s) {
 //                Intent i = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
 //                startActivity(i);
-                mLocationHelper.execute();
-
-                mLocationHelper = new LocationHelper(MainActivity.this, (longtitude, latitude) -> {
-
-                });
-                mLocationHelper.checkpermission();
+                if (!mLocationHelper.checkPlayServices()) {
+                    mLocationHelper.buildGoogleApiClient();
+                }
             }
         };
         if (ActivityCompat.checkSelfPermission(this,
@@ -250,7 +249,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         mMap = new ArcGISMap(Basemap.Type.OPEN_STREET_MAP, LATITUDE, LONGTITUDE, LEVEL_OF_DETAIL);
         mMapView.setMap(mMap);
         mCallout = mMapView.getCallout();
-        final PreparingAsycn preparingAsycn = new PreparingAsycn(this,this, output -> {
+        final PreparingAsycn preparingAsycn = new PreparingAsycn(this, output -> {
             ListObjectDB.getInstance().getLstFeatureLayerDTG();
             setFeatureService();
         });
@@ -593,9 +592,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 //            this.startActivityForResult(intent, 1);
             traCuu.start();
         } else if (id == tanhoa.hcm.ditagis.com.qlcln.R.id.nav_logOut) {
-           startSignIn();
+            startSignIn();
         }
-        DrawerLayout drawer =  findViewById(tanhoa.hcm.ditagis.com.qlcln.R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(tanhoa.hcm.ditagis.com.qlcln.R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
@@ -818,7 +817,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     finish();
                     return;
                 } else {
-                  initMapView();
+                    initMapView();
                 }
                 break;
         }
